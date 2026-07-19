@@ -1,0 +1,20 @@
+# PayFlow documentation
+
+Portfolio documentation for architecture, features, and delivery roadmap.
+
+## Start here
+
+1. [../README.md](../README.md) — product overview for recruiters
+2. [architecture/overview.md](architecture/overview.md) — layering & request flow
+3. [architecture/tradeoffs.md](architecture/tradeoffs.md) — decisions & alternatives
+4. [roadmap.md](roadmap.md) — milestone plan
+
+## Features
+
+- [authentication.md](features/authentication.md)
+- [wallet.md](features/wallet.md)
+- [transfers.md](features/transfers.md)
+- [transactions.md](features/transactions.md)
+- [beneficiaries.md](features/beneficiaries.md)
+- [notifications.md](features/notifications.md)
+- [audit-logs.md](features/audit-logs.md)
