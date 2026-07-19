@@ -120,7 +120,7 @@ These are deliberate choices — not defaults.
 
 | Milestone | Scope | Status |
 |---|---|---|
-| **M1** | Solution, Clean Architecture, EF Core, SQL Server, Docker, initial migration | 🟡 In progress |
+| **M1** | Solution, Clean Architecture, EF Core, SQL Server, Docker, initial migration | ✅ Done |
 | **M2** | Authentication (JWT, refresh, roles, mock email/password flows) | ⬜ Planned |
 | **M3** | Wallet | ⬜ Planned |
 | **M4** | Transfer engine | ⬜ Planned |
@@ -145,6 +145,7 @@ Detailed specs (behavior, rules, API shape, tradeoffs):
 |---|---|
 | Architecture overview | [docs/architecture/overview.md](docs/architecture/overview.md) |
 | Architecture tradeoffs | [docs/architecture/tradeoffs.md](docs/architecture/tradeoffs.md) |
+| Persistence | [docs/architecture/persistence.md](docs/architecture/persistence.md) |
 | Authentication | [docs/features/authentication.md](docs/features/authentication.md) |
 | Wallet | [docs/features/wallet.md](docs/features/wallet.md) |
 | Transfers | [docs/features/transfers.md](docs/features/transfers.md) |
@@ -156,7 +157,7 @@ Detailed specs (behavior, rules, API shape, tradeoffs):
 
 ---
 
-## Domain model (target)
+## Domain model
 
 ```text
 User 1──1 Wallet
@@ -169,7 +170,42 @@ Wallet 1──* Transaction (as sender or receiver)
 
 Entities: `User`, `Wallet`, `Transaction`, `Beneficiary`, `Notification`, `RefreshToken`, `AuditLog`.
 
-ER diagram and architecture diagrams will be added as migrations and modules land (Milestone 12 polish earlier if useful).
+```mermaid
+erDiagram
+    User ||--|| Wallet : owns
+    User ||--o{ Beneficiary : saves
+    User ||--o{ Notification : receives
+    User ||--o{ RefreshToken : has
+    Wallet ||--o{ Transaction : sends
+    Wallet ||--o{ Transaction : receives
+    User ||--o{ AuditLog : acts
+
+    User {
+        guid Id PK
+        string Email UK
+        string PasswordHash
+        string Role
+    }
+    Wallet {
+        guid Id PK
+        guid UserId FK
+        decimal Balance
+        string Currency
+        string Status
+        rowversion RowVersion
+    }
+    Transaction {
+        guid Id PK
+        string ReferenceNumber UK
+        guid SenderWalletId FK
+        guid ReceiverWalletId FK
+        decimal Amount
+        decimal Fee
+        string Status
+    }
+```
+
+Persistence details: [docs/architecture/persistence.md](docs/architecture/persistence.md).
 
 ---
 
@@ -190,15 +226,15 @@ GET /api/v1/health
 
 ---
 
-## Getting started (current)
+## Getting started
 
 ### Prerequisites
 
 - .NET 10 SDK
-- Docker Desktop (for SQL Server / Compose — next Milestone 1 step)
+- Docker Desktop
 - Node 20+ (Angular milestone)
 
-### Build
+### Build & test
 
 ```bash
 dotnet restore PayFlow.sln
@@ -206,13 +242,35 @@ dotnet build PayFlow.sln
 dotnet test PayFlow.sln
 ```
 
-### Run API (local)
+### Option A — Docker Compose (API + SQL Server)
 
 ```bash
+docker compose up --build
+```
+
+- API: `http://localhost:8080/api/v1/health`
+- SQL Server: `localhost,1433` (sa / `PayFlow_Strong_Passw0rd` — local demo only)
+
+In Development, the API applies EF migrations on startup.
+
+### Option B — Local API + Docker SQL only
+
+```bash
+docker compose up sqlserver -d
 dotnet run --project src/PayFlow.Api
 ```
 
-Docker Compose and connection-string setup arrive with the remainder of Milestone 1.
+Default connection string is in `src/PayFlow.Api/appsettings.json`.
+
+### EF migrations
+
+```bash
+dotnet tool restore
+dotnet ef migrations add <Name> \
+  --project src/PayFlow.Infrastructure \
+  --startup-project src/PayFlow.Api \
+  --output-dir Persistence/Migrations
+```
 
 ---
 

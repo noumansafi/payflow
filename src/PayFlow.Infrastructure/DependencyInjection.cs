@@ -1,4 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PayFlow.Infrastructure.Persistence;
 
 namespace PayFlow.Infrastructure;
 
@@ -8,9 +11,17 @@ namespace PayFlow.Infrastructure;
 /// </summary>
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
-        // Milestone 1 (next): DbContext, SQL Server, repositories
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException(
+                "Connection string 'DefaultConnection' is not configured.");
+
+        services.AddDbContext<PayFlowDbContext>(options =>
+            options.UseSqlServer(connectionString));
+
         return services;
     }
 }

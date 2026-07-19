@@ -6,7 +6,7 @@ Ship vertical value in milestones. Each milestone should leave the solution **bu
 
 ## Milestones
 
-### Milestone 1 — Foundation
+### Milestone 1 — Foundation ✅
 - Solution + Clean Architecture projects
 - DI composition roots
 - EF Core + SQL Server

@@ -7,7 +7,8 @@ Portfolio documentation for architecture, features, and delivery roadmap.
 1. [../README.md](../README.md) — product overview for recruiters
 2. [architecture/overview.md](architecture/overview.md) — layering & request flow
 3. [architecture/tradeoffs.md](architecture/tradeoffs.md) — decisions & alternatives
-4. [roadmap.md](roadmap.md) — milestone plan
+4. [architecture/persistence.md](architecture/persistence.md) — EF Core / SQL design
+5. [roadmap.md](roadmap.md) — milestone plan
 
 ## Features
 
