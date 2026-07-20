@@ -1,39 +1,27 @@
 # Feature: Authentication
 
 **Milestone:** 2  
-**Status:** Planned
+**Status:** Done
 
 ## Purpose
 
-Securely identify users and authorize wallet operations. Auth is the gateway for every money-moving action.
+Secure identity for wallet operations: register, login, refresh, logout, and basic account recovery.
 
-## Capabilities
+## Implemented
 
 | Capability | Notes |
 |---|---|
-| Register | Creates user + wallet (same transaction) |
-| Login | Issues JWT access token + refresh token |
-| Refresh | Rotates/validates refresh token; issues new access token |
-| Logout | Revokes refresh token; audit log |
-| Roles | RBAC (e.g. `User`, `Admin`) |
-| Email verification | Mock provider (no real SMTP required) |
-| Password reset | Mock token flow |
-| Password change | Authenticated; audit logged |
+| Register | Creates user + wallet in one save; issues email verification token (mock) |
+| Login | JWT access token + hashed refresh token |
+| Refresh | Rotates refresh token |
+| Logout | Revokes refresh token; audits |
+| Roles | JWT role claim (`User` / `Admin`) |
+| Email verification | Mock token flow |
+| Password forgot/reset | Mock token flow; generic response avoids enumeration |
+| Password change | Authenticated; audited |
+| Current user | `GET /api/v1/auth/me` |
 
-## Security design
-
-- Passwords hashed with a modern algorithm (e.g. ASP.NET Core Identity hasher or equivalent)
-- Short-lived access tokens
-- Longer-lived refresh tokens stored server-side (hashed), revocable
-- Claims include subject, email, roles — minimal necessary set
-- No secrets in source control; config via environment / user secrets
-
-## Commands / queries (target)
-
-**Commands:** `RegisterUser`, `Login`, `RefreshToken`, `Logout`, `ChangePassword`, `RequestPasswordReset`, `ResetPassword`, `VerifyEmail`  
-**Queries:** `GetCurrentUser` (profile)
-
-## API sketch
+## API
 
 ```http
 POST /api/v1/auth/register
@@ -42,27 +30,19 @@ POST /api/v1/auth/refresh
 POST /api/v1/auth/logout
 POST /api/v1/auth/password/forgot
 POST /api/v1/auth/password/reset
+POST /api/v1/auth/password/change
 POST /api/v1/auth/email/verify
 GET  /api/v1/auth/me
 ```
 
-## Tradeoffs
+## Design notes
 
-| Choice | Rationale |
-|---|---|
-| Custom auth vs Identity | Clearer portfolio narrative; more code ownership |
-| Refresh tokens in DB | Enables revocation; required for logout semantics |
-| Mock email | Keeps local/demo frictionless; interface allows real SMTP later |
+- Application uses ports (`IUserRepository`, `ITokenService`, …) — no EF in handlers
+- Passwords hashed via ASP.NET Identity hasher
+- Refresh tokens stored hashed only
+- Validation via FluentValidation pipeline (not controllers)
+- Demo responses may return mock tokens for local testing
 
-## Fintech note
+## Tests
 
-Banks rarely own full IdP stacks in-app. They federate to enterprise IAM. PayFlow still implements token hygiene so the API security story is complete and interview-ready.
-
-## Acceptance criteria
-
-- [ ] Register creates user + active wallet atomically
-- [ ] Invalid credentials return ProblemDetails (no user enumeration leaks where practical)
-- [ ] Access token required for protected endpoints
-- [ ] Refresh flow works; revoked tokens fail
-- [ ] Unit tests for password/hash and token rules
-- [ ] Integration tests for register/login/refresh
+Unit coverage for register/login/refresh/forgot-password rules, password hashing, and register validation.

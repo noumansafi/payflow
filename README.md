@@ -121,7 +121,7 @@ These are deliberate choices — not defaults.
 | Milestone | Scope | Status |
 |---|---|---|
 | **M1** | Solution, Clean Architecture, EF Core, SQL Server, Docker, initial migration | ✅ Done |
-| **M2** | Authentication (JWT, refresh, roles, mock email/password flows) | ⬜ Planned |
+| **M2** | Authentication (JWT, refresh, roles, mock email/password flows) | ✅ Done |
 | **M3** | Wallet | ⬜ Planned |
 | **M4** | Transfer engine | ⬜ Planned |
 | **M5** | Transactions (history/query APIs) | ⬜ Planned |
@@ -218,11 +218,17 @@ Persistence details: [docs/architecture/persistence.md](docs/architecture/persis
 - OpenAPI / Swagger documentation
 - Thin controllers; FluentValidation outside controllers
 
-Current smoke endpoint:
+Current endpoints:
 
 ```http
-GET /api/v1/health
+GET  /api/v1/health
+POST /api/v1/auth/register
+POST /api/v1/auth/login
+POST /api/v1/auth/refresh
+GET  /api/v1/auth/me
 ```
+
+Auth details: [docs/features/authentication.md](docs/features/authentication.md).
 
 ---
 

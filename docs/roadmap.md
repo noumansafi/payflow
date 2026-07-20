@@ -13,7 +13,7 @@ Ship vertical value in milestones. Each milestone should leave the solution **bu
 - Docker Compose (API + SQL)
 - Domain entities + initial migration
 
-### Milestone 2 — Authentication
+### Milestone 2 — Authentication ✅
 - Register / login
 - JWT access + refresh tokens
 - Password hashing

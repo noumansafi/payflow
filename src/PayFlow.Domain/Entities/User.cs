@@ -13,6 +13,11 @@ public sealed class User : AuditableEntity
     public bool IsEmailVerified { get; set; }
     public bool IsActive { get; set; } = true;
 
+    public string? EmailVerificationTokenHash { get; set; }
+    public DateTime? EmailVerificationTokenExpiresAtUtc { get; set; }
+    public string? PasswordResetTokenHash { get; set; }
+    public DateTime? PasswordResetTokenExpiresAtUtc { get; set; }
+
     public Wallet? Wallet { get; set; }
     public ICollection<Beneficiary> Beneficiaries { get; set; } = [];
     public ICollection<Notification> Notifications { get; set; } = [];

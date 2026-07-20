@@ -35,6 +35,15 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasConversion<string>()
             .HasMaxLength(50);
 
+        builder.Property(x => x.EmailVerificationTokenHash)
+            .HasMaxLength(128);
+
+        builder.Property(x => x.PasswordResetTokenHash)
+            .HasMaxLength(128);
+
+        builder.HasIndex(x => x.EmailVerificationTokenHash);
+        builder.HasIndex(x => x.PasswordResetTokenHash);
+
         builder.HasOne(x => x.Wallet)
             .WithOne(x => x.User)
             .HasForeignKey<Wallet>(x => x.UserId)
