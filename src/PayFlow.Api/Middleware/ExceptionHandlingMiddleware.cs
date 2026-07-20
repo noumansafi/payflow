@@ -7,6 +7,11 @@ public sealed class ExceptionHandlingMiddleware(
     RequestDelegate next,
     ILogger<ExceptionHandlingMiddleware> logger)
 {
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
+
     public async Task InvokeAsync(HttpContext context)
     {
         try
@@ -66,6 +71,8 @@ public sealed class ExceptionHandlingMiddleware(
             problem["errors"] = errors;
         }
 
-        await context.Response.WriteAsync(JsonSerializer.Serialize(problem));
+        await context.Response.WriteAsync(
+            JsonSerializer.Serialize(problem, SerializerOptions),
+            context.RequestAborted);
     }
 }

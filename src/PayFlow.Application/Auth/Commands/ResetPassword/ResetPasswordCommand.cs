@@ -1,7 +1,6 @@
 using MediatR;
 using PayFlow.Application.Common.Exceptions;
 using PayFlow.Application.Common.Interfaces;
-using PayFlow.Domain.Entities;
 using PayFlow.Domain.Enums;
 
 namespace PayFlow.Application.Auth.Commands.ResetPassword;
@@ -12,6 +11,7 @@ public sealed record ResetPasswordCommand(
 
 public sealed class ResetPasswordCommandHandler(
     IUserRepository users,
+    IRefreshTokenRepository refreshTokens,
     IPasswordHasher passwordHasher,
     ITokenService tokenService,
     IAuditLogger auditLogger,
@@ -25,6 +25,7 @@ public sealed class ResetPasswordCommandHandler(
         var user = await users.GetByPasswordResetTokenHashAsync(tokenHash, cancellationToken);
 
         if (user is null
+            || !user.IsActive
             || user.PasswordResetTokenExpiresAtUtc is null
             || user.PasswordResetTokenExpiresAtUtc <= now)
         {
@@ -35,6 +36,8 @@ public sealed class ResetPasswordCommandHandler(
         user.PasswordResetTokenHash = null;
         user.PasswordResetTokenExpiresAtUtc = null;
         user.UpdatedAtUtc = now;
+
+        await refreshTokens.RevokeAllActiveForUserAsync(user.Id, now, cancellationToken);
 
         await auditLogger.WriteAsync(
             AuditAction.PasswordChange,

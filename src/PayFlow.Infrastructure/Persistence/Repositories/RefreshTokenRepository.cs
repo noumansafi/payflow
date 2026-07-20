@@ -12,4 +12,19 @@ public sealed class RefreshTokenRepository(PayFlowDbContext dbContext) : IRefres
         dbContext.RefreshTokens.FirstOrDefaultAsync(x => x.TokenHash == tokenHash, cancellationToken);
 
     public void Add(RefreshToken refreshToken) => dbContext.RefreshTokens.Add(refreshToken);
+
+    public async Task RevokeAllActiveForUserAsync(
+        Guid userId,
+        DateTime revokedAtUtc,
+        CancellationToken cancellationToken = default)
+    {
+        var activeTokens = await dbContext.RefreshTokens
+            .Where(x => x.UserId == userId && x.RevokedAtUtc == null)
+            .ToListAsync(cancellationToken);
+
+        foreach (var token in activeTokens)
+        {
+            token.RevokedAtUtc = revokedAtUtc;
+        }
+    }
 }

@@ -1,7 +1,6 @@
 using MediatR;
 using PayFlow.Application.Common.Exceptions;
 using PayFlow.Application.Common.Interfaces;
-using PayFlow.Domain.Entities;
 using PayFlow.Domain.Enums;
 
 namespace PayFlow.Application.Auth.Commands.ChangePassword;
@@ -12,6 +11,7 @@ public sealed record ChangePasswordCommand(
 
 public sealed class ChangePasswordCommandHandler(
     IUserRepository users,
+    IRefreshTokenRepository refreshTokens,
     IPasswordHasher passwordHasher,
     ICurrentUser currentUser,
     IAuditLogger auditLogger,
@@ -28,13 +28,22 @@ public sealed class ChangePasswordCommandHandler(
         var user = await users.GetByIdAsync(userId, cancellationToken)
             ?? throw new UnauthorizedAppException();
 
+        if (!user.IsActive)
+        {
+            throw new UnauthorizedAppException();
+        }
+
         if (!passwordHasher.Verify(user.PasswordHash, request.CurrentPassword))
         {
             throw new UnauthorizedAppException("Current password is incorrect.");
         }
 
+        var now = clock.UtcNow;
         user.PasswordHash = passwordHasher.Hash(request.NewPassword);
-        user.UpdatedAtUtc = clock.UtcNow;
+        user.UpdatedAtUtc = now;
+
+        // Invalidate existing sessions after a password change.
+        await refreshTokens.RevokeAllActiveForUserAsync(user.Id, now, cancellationToken);
 
         await auditLogger.WriteAsync(
             AuditAction.PasswordChange,

@@ -25,7 +25,20 @@ public sealed class RefreshTokenCommandHandler(
         var tokenHash = tokenService.HashToken(request.RefreshToken);
         var existing = await refreshTokens.GetByHashAsync(tokenHash, cancellationToken);
 
-        if (existing is null || existing.RevokedAtUtc is not null || existing.ExpiresAtUtc <= now)
+        if (existing is null)
+        {
+            throw new UnauthorizedAppException("Invalid or expired refresh token.");
+        }
+
+        // Reuse of a rotated/revoked token is treated as theft — revoke the whole family.
+        if (existing.RevokedAtUtc is not null)
+        {
+            await refreshTokens.RevokeAllActiveForUserAsync(existing.UserId, now, cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+            throw new UnauthorizedAppException("Invalid or expired refresh token.");
+        }
+
+        if (existing.ExpiresAtUtc <= now)
         {
             throw new UnauthorizedAppException("Invalid or expired refresh token.");
         }

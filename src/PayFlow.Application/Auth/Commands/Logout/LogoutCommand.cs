@@ -1,6 +1,6 @@
 using MediatR;
+using PayFlow.Application.Common.Exceptions;
 using PayFlow.Application.Common.Interfaces;
-using PayFlow.Domain.Entities;
 using PayFlow.Domain.Enums;
 
 namespace PayFlow.Application.Auth.Commands.Logout;
@@ -19,29 +19,41 @@ public sealed class LogoutCommandHandler(
 {
     public async Task Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
+        if (currentUser.UserId is not Guid userId)
+        {
+            throw new UnauthorizedAppException();
+        }
+
+        var now = clock.UtcNow;
+
         if (!string.IsNullOrWhiteSpace(request.RefreshToken))
         {
             var existing = await refreshTokens.GetByHashAsync(
                 tokenService.HashToken(request.RefreshToken),
                 cancellationToken);
 
-            if (existing is not null && existing.RevokedAtUtc is null)
+            // Only revoke tokens that belong to the authenticated user.
+            if (existing is not null
+                && existing.UserId == userId
+                && existing.RevokedAtUtc is null)
             {
-                existing.RevokedAtUtc = clock.UtcNow;
+                existing.RevokedAtUtc = now;
             }
         }
-
-        if (currentUser.UserId is Guid userId)
+        else
         {
-            await auditLogger.WriteAsync(
-                AuditAction.Logout,
-                "User",
-                userId,
-                userId,
-                """{"event":"logout"}""",
-                request.IpAddress,
-                cancellationToken);
+            // No specific token provided — end all sessions for this user.
+            await refreshTokens.RevokeAllActiveForUserAsync(userId, now, cancellationToken);
         }
+
+        await auditLogger.WriteAsync(
+            AuditAction.Logout,
+            "User",
+            userId,
+            userId,
+            """{"event":"logout"}""",
+            request.IpAddress,
+            cancellationToken);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

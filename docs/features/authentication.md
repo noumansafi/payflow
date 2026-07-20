@@ -41,9 +41,11 @@ GET  /api/v1/auth/me
 
 - Application uses ports (`IUserRepository`, `ITokenService`, …) — no EF in handlers
 - Passwords hashed via ASP.NET Identity hasher
-- Refresh tokens stored hashed only
+- Refresh tokens stored hashed only; password change/reset revokes active sessions
+- Forgot-password response never returns the reset token (delivered via mock email/logs)
+- Refresh-token reuse after rotation revokes the user's active sessions
 - Validation via FluentValidation pipeline (not controllers)
-- Demo responses may return mock tokens for local testing
+- Register may return email verification token for local demo convenience
 
 ## Tests
 

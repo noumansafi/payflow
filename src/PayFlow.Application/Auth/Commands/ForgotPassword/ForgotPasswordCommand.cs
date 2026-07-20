@@ -5,7 +5,7 @@ namespace PayFlow.Application.Auth.Commands.ForgotPassword;
 
 public sealed record ForgotPasswordCommand(string Email) : IRequest<ForgotPasswordResult>;
 
-public sealed record ForgotPasswordResult(string Message, string? ResetToken);
+public sealed record ForgotPasswordResult(string Message);
 
 public sealed class ForgotPasswordCommandHandler(
     IUserRepository users,
@@ -24,10 +24,10 @@ public sealed class ForgotPasswordCommandHandler(
         var email = request.Email.Trim().ToLowerInvariant();
         var user = await users.GetByEmailAsync(email, cancellationToken);
 
-        // Avoid account enumeration in the public response.
+        // Same response whether or not the account exists (no enumeration via body fields).
         if (user is null || !user.IsActive)
         {
-            return new ForgotPasswordResult(GenericMessage, null);
+            return new ForgotPasswordResult(GenericMessage);
         }
 
         var resetToken = tokenService.CreateRefreshToken();
@@ -37,13 +37,13 @@ public sealed class ForgotPasswordCommandHandler(
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
+        // Token is delivered only via mock email/logs — never in the HTTP response.
         await emailSender.SendEmailAsync(
             user.Email,
             "Reset your PayFlow password",
             $"Your password reset token is: {resetToken}",
             cancellationToken);
 
-        // Returned for local/demo convenience (mock email). Not a production pattern.
-        return new ForgotPasswordResult(GenericMessage, resetToken);
+        return new ForgotPasswordResult(GenericMessage);
     }
 }

@@ -21,6 +21,11 @@ public sealed class GetCurrentUserQueryHandler(
         var user = await users.GetByIdAsync(userId, cancellationToken)
             ?? throw new NotFoundException("User was not found.");
 
+        if (!user.IsActive)
+        {
+            throw new UnauthorizedAppException();
+        }
+
         return new AuthUserDto(
             user.Id,
             user.Email,

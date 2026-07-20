@@ -27,24 +27,31 @@ public sealed class RefreshTokenCommandHandlerTests
         new(_refreshTokens, _users, _tokenService, _clock, _unitOfWork, _jwtOptions);
 
     [Fact]
-    public async Task Handle_WhenTokenRevoked_ThrowsUnauthorized()
+    public async Task Handle_WhenTokenRevoked_RevokesAllSessionsAndThrows()
     {
         var now = DateTime.UtcNow;
+        var userId = Guid.NewGuid();
         _clock.UtcNow.Returns(now);
         _tokenService.HashToken("raw").Returns("hash");
         _refreshTokens.GetByHashAsync("hash", Arg.Any<CancellationToken>()).Returns(new RefreshToken
         {
             Id = Guid.NewGuid(),
-            UserId = Guid.NewGuid(),
+            UserId = userId,
             TokenHash = "hash",
             CreatedAtUtc = now.AddDays(-1),
             ExpiresAtUtc = now.AddDays(1),
-            RevokedAtUtc = now.AddMinutes(-1)
+            RevokedAtUtc = now.AddMinutes(-1),
+            ReplacedByTokenHash = "newer-hash"
         });
 
         var act = () => CreateSut().Handle(new RefreshTokenCommand("raw"), CancellationToken.None);
 
         await act.Should().ThrowAsync<UnauthorizedAppException>();
+        await _refreshTokens.Received(1).RevokeAllActiveForUserAsync(
+            userId,
+            now,
+            Arg.Any<CancellationToken>());
+        await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
