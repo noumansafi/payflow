@@ -23,6 +23,8 @@ Secure identity for wallet operations: register, login, refresh, logout, and bas
 
 ## API
 
+Interactive docs (Development): `http://localhost:5079/swagger`
+
 ```http
 POST /api/v1/auth/register
 POST /api/v1/auth/login

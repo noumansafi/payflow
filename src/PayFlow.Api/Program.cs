@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PayFlow.Api.Middleware;
+using PayFlow.Api.OpenApi;
 using PayFlow.Api.Services;
 using PayFlow.Application;
 using PayFlow.Application.Common.Interfaces;
@@ -13,7 +14,7 @@ using PayFlow.Infrastructure.Persistence;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+builder.Services.AddPayFlowSwagger();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 
@@ -53,7 +54,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UsePayFlowSwagger();
     await MigrateDatabaseWithRetryAsync(app.Services);
 }
 

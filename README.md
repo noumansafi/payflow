@@ -230,6 +230,16 @@ GET  /api/v1/auth/me
 
 Auth details: [docs/features/authentication.md](docs/features/authentication.md).
 
+### Swagger UI
+
+In Development, open:
+
+```text
+http://localhost:5079/swagger
+```
+
+Use **Authorize** with `Bearer {accessToken}` after login to call protected endpoints.
+
 ---
 
 ## Getting started
