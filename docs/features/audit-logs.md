@@ -13,7 +13,7 @@ Provide a security and compliance trail for sensitive actions. In interviews, th
 - Logout
 - Password change
 - Transfer
-- Wallet freeze
+- Wallet status change (freeze / activation)
 - Wallet activation
 
 ## Model (target)

@@ -21,11 +21,11 @@ Ship vertical value in milestones. Each milestone should leave the solution **bu
 - Mock email verification & password reset
 - Audit: login / logout / password change
 
-### Milestone 3 — Wallet
+### Milestone 3 — Wallet ✅
 - Auto-create wallet on registration
 - Get wallet / balance
-- Freeze / activate
-- Wallet status guards for transfers
+- Change wallet status (self-service transitions)
+- Wallet status guards for transfers (enforced in M4)
 
 ### Milestone 4 — Transfer engine
 - Atomic P2P transfer

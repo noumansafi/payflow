@@ -27,7 +27,7 @@ PayFlow lets registered users:
 | Capability | Description |
 |---|---|
 | **Accounts** | Register, login, verify email (mock), reset password (mock) |
-| **Wallet** | One wallet per user; balance, status, freeze/activate |
+| **Wallet** | One wallet per user; balance, status change (Active ↔ Frozen) |
 | **P2P Transfer** | Send money to another user with strict validation + atomicity |
 | **History** | Paginated, filterable transaction history |
 | **Beneficiaries** | Save frequent recipients; prevent duplicates |
@@ -122,7 +122,7 @@ These are deliberate choices — not defaults.
 |---|---|---|
 | **M1** | Solution, Clean Architecture, EF Core, SQL Server, Docker, initial migration | ✅ Done |
 | **M2** | Authentication (JWT, refresh, roles, mock email/password flows) | ✅ Done |
-| **M3** | Wallet | ⬜ Planned |
+| **M3** | Wallet | ✅ Done |
 | **M4** | Transfer engine | ⬜ Planned |
 | **M5** | Transactions (history/query APIs) | ⬜ Planned |
 | **M6** | Beneficiaries | ⬜ Planned |
@@ -228,6 +228,7 @@ POST /api/v1/auth/refresh
 GET  /api/v1/auth/me
 GET  /api/v1/wallets/me
 GET  /api/v1/wallets/me/balance
+POST /api/v1/wallets/me/status
 ```
 
 Auth details: [docs/features/authentication.md](docs/features/authentication.md).
