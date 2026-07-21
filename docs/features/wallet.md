@@ -1,7 +1,7 @@
 # Feature: Wallet
 
 **Milestone:** 3  
-**Status:** In progress (Step 2/4 — persistence wired)
+**Status:** In progress (Step 3/4 — API endpoints)
 
 ## Purpose
 
@@ -54,7 +54,7 @@ POST /api/v1/wallets/me/activate
 
 1. Application queries + port + unit tests ✅  
 2. Infrastructure `WalletRepository` + DI ✅  
-3. API endpoints + Swagger  
+3. API endpoints + Swagger ✅  
 4. Freeze / Activate commands + tests  
 
 ## Tradeoffs
@@ -73,8 +73,8 @@ Mature payment systems often use an append-only **ledger** and treat wallet bala
 
 - [x] Queries never mutate state
 - [x] Unit tests for auth + not-found on get wallet/balance
-- [ ] Registration always yields one wallet (already true from M2; covered by register tests)
-- [ ] API endpoints expose wallet/balance
+- [x] Registration always yields one wallet (already true from M2; covered by register tests)
+- [x] API endpoints expose wallet/balance
 - [ ] Frozen wallet cannot send/receive transfers (M4)
 - [ ] Freeze/activate emit audit logs
 - [ ] Tests for status transitions

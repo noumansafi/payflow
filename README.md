@@ -226,6 +226,8 @@ POST /api/v1/auth/register
 POST /api/v1/auth/login
 POST /api/v1/auth/refresh
 GET  /api/v1/auth/me
+GET  /api/v1/wallets/me
+GET  /api/v1/wallets/me/balance
 ```
 
 Auth details: [docs/features/authentication.md](docs/features/authentication.md).
