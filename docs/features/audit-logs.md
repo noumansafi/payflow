@@ -59,6 +59,6 @@ Regulated environments often require immutable audit storage, retention policies
 ## Acceptance criteria
 
 - [ ] Each listed action creates an audit row
-- [ ] Transfer audit includes reference number (not secrets)
+- [x] Transfer audit includes reference number (not secrets)
 - [ ] Non-admin cannot list global audit logs
 - [ ] Unit tests ensure handlers call audit port

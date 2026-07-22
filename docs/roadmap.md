@@ -25,9 +25,9 @@ Ship vertical value in milestones. Each milestone should leave the solution **bu
 - Auto-create wallet on registration
 - Get wallet / balance
 - Change wallet status (self-service transitions)
-- Wallet status guards for transfers (enforced in M4)
+- Wallet status guards for transfers ✅
 
-### Milestone 4 — Transfer engine
+### Milestone 4 — Transfer engine ✅
 - Atomic P2P transfer
 - Business rule validation
 - Reference number generation

@@ -123,7 +123,7 @@ These are deliberate choices — not defaults.
 | **M1** | Solution, Clean Architecture, EF Core, SQL Server, Docker, initial migration | ✅ Done |
 | **M2** | Authentication (JWT, refresh, roles, mock email/password flows) | ✅ Done |
 | **M3** | Wallet | ✅ Done |
-| **M4** | Transfer engine | ⬜ Planned |
+| **M4** | Transfer engine | ✅ Done |
 | **M5** | Transactions (history/query APIs) | ⬜ Planned |
 | **M6** | Beneficiaries | ⬜ Planned |
 | **M7** | Notifications | ⬜ Planned |
@@ -301,7 +301,7 @@ dotnet ef migrations add <Name> \
 If you only have 15 minutes, inspect:
 
 1. Project references under `src/` (dependency direction)
-2. Transfer command pipeline (once M4 lands) for atomicity + validation
+2. Transfer command pipeline for atomicity + validation
 3. Auth token/refresh flow (M2)
 4. Unit tests around money rules (M4/M10)
 5. `docs/architecture/tradeoffs.md` — evidence of engineering judgment

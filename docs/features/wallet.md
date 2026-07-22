@@ -80,4 +80,4 @@ Mature payment systems often use an append-only **ledger** and treat wallet bala
 - [x] API endpoints expose wallet/balance
 - [x] Status changes emit audit logs
 - [x] Tests for allowed status transitions
-- [ ] Frozen wallet cannot send/receive transfers (M4)
+- [x] Frozen wallet cannot send/receive transfers (M4)

@@ -1,7 +1,7 @@
 # Feature: Transfers (P2P Transfer Engine)
 
 **Milestone:** 4  
-**Status:** Planned
+**Status:** Done
 
 ## Purpose
 
@@ -27,7 +27,7 @@ This is the highest-signal feature for interviews.
 
 `TransferMoney`
 
-Suggested payload:
+Payload:
 
 ```json
 {
@@ -37,43 +37,43 @@ Suggested payload:
 }
 ```
 
-## Processing pipeline (target)
+## Processing pipeline
 
 ```text
 Validate request (FluentValidation)
-  → Load sender/receiver wallets (consistent locking strategy)
-    → Enforce domain rules
-      → Begin transaction
-        → Debit sender
-        → Credit receiver
-        → Insert Transaction (Completed)
-        → Insert Notification(s)
-        → Insert AuditLog
-      → Commit
+  → Load sender/receiver wallets
+    → Enforce TransferRules (domain)
+      → Debit sender / credit receiver
+      → Insert Transaction (Completed)
+      → Insert Notification(s)
+      → Insert AuditLog
+      → SaveChanges (single UnitOfWork; RowVersion concurrency → 409)
   → Return reference number
 ```
 
 ## Concurrency
 
-Use a strategy that prevents lost updates under concurrent transfers, e.g.:
+`Wallet.RowVersion` optimistic concurrency token. Concurrent balance updates that collide map to `ConflictException` (HTTP 409) via `UnitOfWork`.
 
-- Row version / concurrency token on Wallet, or
-- Atomic SQL update with balance predicate (`WHERE Balance >= @amount`)
-
-Document the chosen approach in code comments + tests.
-
-## API sketch
+## API
 
 ```http
 POST /api/v1/transfers
 ```
 
+Development-only funding (local/Swagger demos):
+
+```http
+POST /api/v1/wallets/me/credit
+{ "amount": 100 }
+```
+
 Responses:
 
-- `201/200` with reference number on success
+- `201` with reference number on success
 - `400` validation failures (ProblemDetails)
-- `409` concurrency conflicts (if applicable)
-- `404` receiver not found
+- `404` receiver / sender wallet not found
+- `409` insufficient funds, inactive wallets, or concurrency conflict
 
 ## Tradeoffs
 
@@ -82,15 +82,18 @@ Responses:
 | Synchronous transfer in one request | Clear demo; matches monolith MVP |
 | Fee column now, engine later | Avoids schema churn |
 | Notifications inside same TX | Consistent UX; outbox later for external channels |
+| Dev-only credit endpoint | Enables Swagger demos without SQL; unavailable outside Development |
+| Unit tests for rules; DB integration later (M10) | Fast feedback now; deeper atomicity proof when integration suite lands |
 
 ## Fintech note
 
-Card networks and banks use clearing, settlement, and often asynchronous states (`Pending` → `Completed`). PayFlow supports those statuses in the model; MVP P2P can complete inline while keeping the door open for pending flows (e.g. compliance holds).
+Card networks and banks use clearing, settlement, and often asynchronous states (`Pending` → `Completed`). PayFlow supports those statuses in the model; MVP P2P completes inline while keeping the door open for pending flows (e.g. compliance holds).
 
 ## Acceptance criteria
 
-- [ ] All business rules covered by unit tests
-- [ ] Integration test proves atomicity (failure path leaves balances unchanged)
-- [ ] Reference numbers unique
-- [ ] Audit + notification created on success
-- [ ] Self-transfer rejected
+- [x] All business rules covered by unit tests
+- [ ] Integration test proves atomicity (failure path leaves balances unchanged) — deferred to M10
+- [x] Reference numbers unique
+- [x] Audit + notification created on success
+- [x] Self-transfer rejected
+- [x] Frozen wallets cannot send/receive
