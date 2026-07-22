@@ -229,9 +229,12 @@ GET  /api/v1/auth/me
 GET  /api/v1/wallets/me
 GET  /api/v1/wallets/me/balance
 POST /api/v1/wallets/me/status
+POST /api/v1/wallets/me/credit   # Development only
+POST /api/v1/transfers
 ```
 
 Auth details: [docs/features/authentication.md](docs/features/authentication.md).
+Transfer details: [docs/features/transfers.md](docs/features/transfers.md).
 
 ### Swagger UI
 
