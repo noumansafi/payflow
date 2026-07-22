@@ -13,6 +13,11 @@ public sealed class UnitOfWork(PayFlowDbContext dbContext) : IUnitOfWork
         {
             return await dbContext.SaveChangesAsync(cancellationToken);
         }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new ConflictException(
+                "The resource was modified by another request. Please retry.");
+        }
         catch (DbUpdateException ex) when (IsUniqueConstraintViolation(ex))
         {
             throw new ConflictException("A record with the same unique value already exists.");

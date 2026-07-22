@@ -6,6 +6,7 @@ using PayFlow.Application.Options;
 using PayFlow.Infrastructure.Auth;
 using PayFlow.Infrastructure.Persistence;
 using PayFlow.Infrastructure.Persistence.Repositories;
+using PayFlow.Infrastructure.Transfers;
 
 namespace PayFlow.Infrastructure;
 
@@ -26,9 +27,12 @@ public static class DependencyInjection
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IWalletRepository, WalletRepository>();
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAuditLogger, AuditLogger>();
+        services.AddScoped<IReferenceNumberGenerator, ReferenceNumberGenerator>();
 
         services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
