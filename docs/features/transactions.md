@@ -11,8 +11,8 @@ Provide a durable history of money movement for users and for system diagnostics
 
 | Field | Description |
 |---|---|
-| Id | Primary key |
-| ReferenceNumber | Public correlation id |
+| Id | Internal key — app/UI lookup after a list |
+| ReferenceNumber | Public key — receipts, support, human-facing lookup |
 | SenderWalletId | Source wallet |
 | ReceiverWalletId | Destination wallet |
 | Amount | Transfer amount |
@@ -27,8 +27,8 @@ Provide a durable history of money movement for users and for system diagnostics
 | Query | Rules |
 |---|---|
 | `GetTransactions` | Owner wallet only; paginated; filterable; sortable |
-| `GetTransactionById` | 404 if missing or not involving caller's wallet |
-| `GetTransactionByReference` | Same ownership rule as by-id |
+| `GetTransactionById` | Lookup by internal Id; 404 if missing or not involving caller's wallet |
+| `GetTransactionByReference` | Lookup by public reference; same ownership rule as by-id |
 
 Filters on list:
 
