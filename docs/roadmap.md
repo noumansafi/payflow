@@ -34,7 +34,7 @@ Ship vertical value in milestones. Each milestone should leave the solution **bu
 - Notifications + audit on transfer
 - Fee field reserved for future policy
 
-### Milestone 5 — Transactions
+### Milestone 5 — Transactions ✅
 - History queries
 - Pagination / filtering / sorting
 - Status model: Pending / Completed / Failed / Cancelled

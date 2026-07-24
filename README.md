@@ -124,7 +124,7 @@ These are deliberate choices — not defaults.
 | **M2** | Authentication (JWT, refresh, roles, mock email/password flows) | ✅ Done |
 | **M3** | Wallet | ✅ Done |
 | **M4** | Transfer engine | ✅ Done |
-| **M5** | Transactions (history/query APIs) | ⬜ Planned |
+| **M5** | Transactions (history/query APIs) | ✅ Done |
 | **M6** | Beneficiaries | ⬜ Planned |
 | **M7** | Notifications | ⬜ Planned |
 | **M8** | Audit logs | ⬜ Planned |
