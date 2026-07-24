@@ -24,7 +24,7 @@ Each user owns exactly one wallet that holds balance and lifecycle status. The w
 |---|---|---|---|
 | View wallet | Query | Owner only | Done |
 | View balance | Query | Owner only | Done |
-| Wallet history | Query | Via transactions feature | Later (M5) |
+| Wallet history | Query | Via transactions feature | Done (M5) |
 | Change status | Command | Owner self-service transitions only (Active ↔ Frozen); audited; conflict if unchanged | Done |
 
 ## Invariants
