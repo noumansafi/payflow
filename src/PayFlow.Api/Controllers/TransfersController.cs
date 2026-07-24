@@ -24,6 +24,6 @@ public sealed class TransfersController(ISender sender) : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(command, cancellationToken);
-        return Created($"/api/v1/transfers/{result.ReferenceNumber}", result);
+        return Created($"/api/v1/transactions/by-reference/{result.ReferenceNumber}", result);
     }
 }

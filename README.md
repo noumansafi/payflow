@@ -231,10 +231,14 @@ GET  /api/v1/wallets/me/balance
 POST /api/v1/wallets/me/status
 POST /api/v1/wallets/me/credit   # Development only
 POST /api/v1/transfers
+GET  /api/v1/transactions
+GET  /api/v1/transactions/{id}
+GET  /api/v1/transactions/by-reference/{referenceNumber}
 ```
 
 Auth details: [docs/features/authentication.md](docs/features/authentication.md).
 Transfer details: [docs/features/transfers.md](docs/features/transfers.md).
+Transaction history: [docs/features/transactions.md](docs/features/transactions.md).
 
 ### Swagger UI
 
