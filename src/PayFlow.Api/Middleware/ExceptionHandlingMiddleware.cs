@@ -47,11 +47,23 @@ public sealed class ExceptionHandlingMiddleware(
 
         if (statusCode >= StatusCodes.Status500InternalServerError)
         {
-            logger.LogError(exception, "Unhandled exception");
+            logger.LogError(
+                exception,
+                "Unhandled exception for {RequestMethod} {RequestPath}. TraceId {TraceId}",
+                context.Request.Method,
+                context.Request.Path.Value,
+                context.TraceIdentifier);
         }
         else
         {
-            logger.LogWarning(exception, "Handled application exception: {Title}", title);
+            logger.LogWarning(
+                exception,
+                "Handled {ErrorTitle} ({StatusCode}) for {RequestMethod} {RequestPath}. TraceId {TraceId}",
+                title,
+                statusCode,
+                context.Request.Method,
+                context.Request.Path.Value,
+                context.TraceIdentifier);
         }
 
         context.Response.ContentType = "application/problem+json";

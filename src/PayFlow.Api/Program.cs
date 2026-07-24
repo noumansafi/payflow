@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -10,60 +11,113 @@ using PayFlow.Application.Common.Interfaces;
 using PayFlow.Application.Options;
 using PayFlow.Infrastructure;
 using PayFlow.Infrastructure.Persistence;
+using Serilog;
+using Serilog.Events;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-builder.Services.AddControllers();
-builder.Services.AddPayFlowSwagger();
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ICurrentUser, CurrentUser>();
-
-builder.Services.AddApplication();
-builder.Services.AddInfrastructure(builder.Configuration);
-
-var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
-    ?? throw new InvalidOperationException("Jwt configuration section is missing.");
-
-if (string.IsNullOrWhiteSpace(jwtOptions.Secret) || jwtOptions.Secret.Length < 32)
+try
 {
-    throw new InvalidOperationException("Jwt:Secret must be configured and at least 32 characters.");
-}
+    Log.Information("Starting PayFlow API");
 
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+    var builder = WebApplication.CreateBuilder(args);
+
+    builder.Services.AddSerilog((services, loggerConfiguration) => loggerConfiguration
+        .ReadFrom.Configuration(builder.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext());
+
+    builder.Services.AddControllers();
+    builder.Services.AddPayFlowSwagger();
+    builder.Services.AddHttpContextAccessor();
+    builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+
+    builder.Services.AddApplication();
+    builder.Services.AddInfrastructure(builder.Configuration);
+
+    var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
+        ?? throw new InvalidOperationException("Jwt configuration section is missing.");
+
+    if (string.IsNullOrWhiteSpace(jwtOptions.Secret) || jwtOptions.Secret.Length < 32)
     {
-        options.TokenValidationParameters = new TokenValidationParameters
+        throw new InvalidOperationException("Jwt:Secret must be configured and at least 32 characters.");
+    }
+
+    builder.Services
+        .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateIssuerSigningKey = true,
-            ValidateLifetime = true,
-            ValidIssuer = jwtOptions.Issuer,
-            ValidAudience = jwtOptions.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret)),
-            ClockSkew = TimeSpan.FromMinutes(1)
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = true,
+                ValidIssuer = jwtOptions.Issuer,
+                ValidAudience = jwtOptions.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret)),
+                ClockSkew = TimeSpan.FromMinutes(1)
+            };
+        });
+
+    builder.Services.AddAuthorization();
+
+    var app = builder.Build();
+
+    app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+    app.UseSerilogRequestLogging(options =>
+    {
+        options.MessageTemplate =
+            "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+
+        options.GetLevel = (httpContext, _, exception) =>
+            exception is not null || httpContext.Response.StatusCode >= 500
+                ? LogEventLevel.Error
+                : httpContext.Response.StatusCode >= 400
+                    ? LogEventLevel.Warning
+                    : LogEventLevel.Information;
+
+        options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+        {
+            diagnosticContext.Set("TraceId", httpContext.TraceIdentifier);
+            diagnosticContext.Set(
+                "UserId",
+                httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "(anonymous)");
+            diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
+            diagnosticContext.Set(
+                "ClientIp",
+                httpContext.Connection.RemoteIpAddress?.ToString() ?? "(unknown)");
         };
     });
 
-builder.Services.AddAuthorization();
+    if (app.Environment.IsDevelopment())
+    {
+        app.UsePayFlowSwagger();
+        await MigrateDatabaseWithRetryAsync(app.Services);
+    }
 
-var app = builder.Build();
+    app.UseHttpsRedirection();
+    app.UseAuthentication();
+    app.UseAuthorization();
+    app.UseMiddleware<RequestLogContextMiddleware>();
+    app.MapControllers();
 
-app.UseMiddleware<ExceptionHandlingMiddleware>();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UsePayFlowSwagger();
-    await MigrateDatabaseWithRetryAsync(app.Services);
+    app.Run();
 }
-
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
-
-app.Run();
+catch (Exception exception)
+{
+    Log.Fatal(exception, "PayFlow API terminated unexpectedly");
+    throw;
+}
+finally
+{
+    Log.CloseAndFlush();
+}
 
 static async Task MigrateDatabaseWithRetryAsync(IServiceProvider services)
 {
@@ -77,16 +131,21 @@ static async Task MigrateDatabaseWithRetryAsync(IServiceProvider services)
             await using var scope = services.CreateAsyncScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<PayFlowDbContext>();
             await dbContext.Database.MigrateAsync();
+            Log.Information("Database migrations applied successfully");
             return;
         }
         catch (Exception ex) when (attempt < maxAttempts)
         {
-            Console.WriteLine(
-                $"[PayFlow] Database not ready (attempt {attempt}/{maxAttempts}): {ex.Message}");
+            Log.Warning(
+                ex,
+                "Database not ready (attempt {Attempt}/{MaxAttempts})",
+                attempt,
+                maxAttempts);
             await Task.Delay(delay);
         }
         catch (Exception ex)
         {
+            Log.Error(ex, "Could not connect to SQL Server to apply migrations");
             throw new InvalidOperationException(
                 """
                 Could not connect to SQL Server to apply migrations.

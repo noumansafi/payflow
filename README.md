@@ -43,9 +43,10 @@ PayFlow lets registered users:
 3. **Transfer engine as a first-class concern** — not “update two rows”; validation, atomicity, reference numbers, side effects (audit + notification).
 4. **Auth that mirrors real APIs** — short-lived JWT access tokens + refresh token rotation patterns.
 5. **API discipline** — versioning, pagination/filtering/sorting, ProblemDetails, Swagger.
-6. **Test pyramid** — unit tests for business rules; integration tests for API + persistence.
-7. **DevOps literacy** — Docker Compose (API + SQL + Angular), GitHub Actions restore/build/test/publish.
-8. **Honest documentation** — architecture tradeoffs, feature specs, and a clear roadmap.
+6. **Structured ops logging** — Serilog + `ILogger<T>`, request middleware, TraceId correlation (separate from audit).
+7. **Test pyramid** — unit tests for business rules; integration tests for API + persistence.
+8. **DevOps literacy** — Docker Compose (API + SQL + Angular), GitHub Actions restore/build/test/publish.
+9. **Honest documentation** — architecture tradeoffs, feature specs, and a clear roadmap.
 
 ---
 
@@ -57,7 +58,7 @@ PayFlow lets registered users:
 | Architecture | Clean Architecture, CQRS, MediatR, FluentValidation |
 | Data | EF Core (Code First), SQL Server, Migrations |
 | Auth | JWT, Refresh Tokens, Role-based authorization |
-| Logging | Serilog |
+| Logging | Serilog (structured) over `ILogger<T>` |
 | Frontend | Angular 20, Angular Material, Signals, standalone components |
 | Quality | xUnit, FluentAssertions, unit + integration tests |
 | Platform | Docker, Docker Compose, GitHub Actions |
@@ -146,6 +147,7 @@ Detailed specs (behavior, rules, API shape, tradeoffs):
 | Architecture overview | [docs/architecture/overview.md](docs/architecture/overview.md) |
 | Architecture tradeoffs | [docs/architecture/tradeoffs.md](docs/architecture/tradeoffs.md) |
 | Persistence | [docs/architecture/persistence.md](docs/architecture/persistence.md) |
+| Logging (Serilog) | [docs/architecture/logging.md](docs/architecture/logging.md) |
 | Authentication | [docs/features/authentication.md](docs/features/authentication.md) |
 | Wallet | [docs/features/wallet.md](docs/features/wallet.md) |
 | Transfers | [docs/features/transfers.md](docs/features/transfers.md) |

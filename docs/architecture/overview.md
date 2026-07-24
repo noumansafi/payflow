@@ -16,10 +16,14 @@ PayFlow follows **Clean Architecture** with **CQRS** for application use cases.
 
 ```text
 HTTP Request
+  → ExceptionHandlingMiddleware (ProblemDetails + structured logs)
+  → Serilog request logging (method/path/status/elapsed)
+  → Authentication / Authorization
+  → RequestLogContextMiddleware (TraceId / UserId)
   → Api Controller (map DTO → command/query)
     → MediatR
+      → Logging behavior (request name + elapsed; no payloads)
       → Validation behavior (FluentValidation)
-      → Logging / transaction behaviors (as needed)
       → Handler (Application)
         → Domain rules
         → Ports (interfaces)
