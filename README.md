@@ -236,11 +236,15 @@ POST /api/v1/transfers
 GET  /api/v1/transactions
 GET  /api/v1/transactions/{id}
 GET  /api/v1/transactions/by-reference/{referenceNumber}
+GET  /api/v1/beneficiaries
+POST /api/v1/beneficiaries
+DELETE /api/v1/beneficiaries/{id}
 ```
 
 Auth details: [docs/features/authentication.md](docs/features/authentication.md).
 Transfer details: [docs/features/transfers.md](docs/features/transfers.md).
 Transaction history: [docs/features/transactions.md](docs/features/transactions.md).
+Beneficiaries: [docs/features/beneficiaries.md](docs/features/beneficiaries.md).
 
 ### Swagger UI
 
