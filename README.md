@@ -237,6 +237,7 @@ GET  /api/v1/transactions
 GET  /api/v1/transactions/{id}
 GET  /api/v1/transactions/by-reference/{referenceNumber}
 GET  /api/v1/beneficiaries
+GET  /api/v1/beneficiaries/lookup?userId={guid}
 POST /api/v1/beneficiaries
 DELETE /api/v1/beneficiaries/{id}
 ```

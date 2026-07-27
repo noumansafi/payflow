@@ -5,6 +5,7 @@ using PayFlow.Application.Beneficiaries.Commands.AddBeneficiary;
 using PayFlow.Application.Beneficiaries.Commands.RemoveBeneficiary;
 using PayFlow.Application.Beneficiaries.Dtos;
 using PayFlow.Application.Beneficiaries.Queries.GetBeneficiaries;
+using PayFlow.Application.Beneficiaries.Queries.ResolveBeneficiaryCandidate;
 using PayFlow.Application.Common.Models;
 
 namespace PayFlow.Api.Controllers;
@@ -29,7 +30,24 @@ public sealed class BeneficiariesController(ISender sender) : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Add a beneficiary for the authenticated user.</summary>
+    /// <summary>
+    /// Resolve a PayFlow user before adding them as a beneficiary (confirm name/id).
+    /// </summary>
+    [HttpGet("lookup")]
+    [ProducesResponseType(typeof(BeneficiaryCandidateDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Lookup(
+        [FromQuery] Guid userId,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(
+            new ResolveBeneficiaryCandidateQuery(userId),
+            cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Add a beneficiary for the authenticated user (after successful lookup).</summary>
     [HttpPost]
     [ProducesResponseType(typeof(BeneficiaryDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
