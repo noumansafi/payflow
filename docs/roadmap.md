@@ -39,7 +39,7 @@ Ship vertical value in milestones. Each milestone should leave the solution **bu
 - Pagination / filtering / sorting
 - Status model: Pending / Completed / Failed / Cancelled
 
-### Milestone 6 — Beneficiaries
+### Milestone 6 — Beneficiaries ✅
 - Add / remove / list
 - Duplicate prevention
 
