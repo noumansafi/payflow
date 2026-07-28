@@ -8,6 +8,13 @@ public sealed class NotificationRepository(PayFlowDbContext dbContext) : INotifi
 {
     public void Add(Notification notification) => dbContext.Notifications.Add(notification);
 
+    public Task<Notification?> GetByIdForUserAsync(
+        Guid id,
+        Guid userId,
+        CancellationToken cancellationToken = default) =>
+        dbContext.Notifications
+            .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId, cancellationToken);
+
     public async Task<NotificationListResult> ListForUserAsync(
         Guid userId,
         bool? isRead,
@@ -35,4 +42,11 @@ public sealed class NotificationRepository(PayFlowDbContext dbContext) : INotifi
 
         return new NotificationListResult(items, totalCount);
     }
+
+    public Task<int> MarkAllUnreadAsReadAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default) =>
+        dbContext.Notifications
+            .Where(x => x.UserId == userId && !x.IsRead)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.IsRead, true), cancellationToken);
 }
