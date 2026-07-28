@@ -8,3 +8,5 @@ public sealed record NotificationDto(
     bool IsRead,
     Guid? RelatedEntityId,
     DateTime CreatedAtUtc);
+
+public sealed record MarkAllNotificationsReadResult(int MarkedCount);

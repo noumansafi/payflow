@@ -240,12 +240,16 @@ GET  /api/v1/beneficiaries
 GET  /api/v1/beneficiaries/lookup?userId={guid}
 POST /api/v1/beneficiaries
 DELETE /api/v1/beneficiaries/{id}
+GET  /api/v1/notifications
+POST /api/v1/notifications/read-all
+POST /api/v1/notifications/{id}/read
 ```
 
 Auth details: [docs/features/authentication.md](docs/features/authentication.md).
 Transfer details: [docs/features/transfers.md](docs/features/transfers.md).
 Transaction history: [docs/features/transactions.md](docs/features/transactions.md).
 Beneficiaries: [docs/features/beneficiaries.md](docs/features/beneficiaries.md).
+Notifications: [docs/features/notifications.md](docs/features/notifications.md).
 
 ### Swagger UI
 
