@@ -43,9 +43,9 @@ Ship vertical value in milestones. Each milestone should leave the solution **bu
 - Add / remove / list
 - Duplicate prevention
 
-### Milestone 7 — Notifications
-- Persist notifications
-- List / mark-read patterns
+### Milestone 7 — Notifications ✅
+- Persist notifications (created on transfer)
+- List / mark-read / mark-all-read
 - Extension points for SignalR / email / push
 
 ### Milestone 8 — Audit logs
