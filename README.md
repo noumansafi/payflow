@@ -127,7 +127,7 @@ These are deliberate choices — not defaults.
 | **M4** | Transfer engine | ✅ Done |
 | **M5** | Transactions (history/query APIs) | ✅ Done |
 | **M6** | Beneficiaries | ✅ Done |
-| **M7** | Notifications | ⬜ Planned |
+| **M7** | Notifications | ✅ Done |
 | **M8** | Audit logs | ⬜ Planned |
 | **M9** | Angular frontend | ⬜ Planned |
 | **M10** | Testing depth | ⬜ Planned |
