@@ -33,6 +33,7 @@ public static class DependencyInjection
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IClientInfo, NullClientInfo>();
         services.AddScoped<IAuditLogger, AuditLogger>();
         services.AddScoped<IReferenceNumberGenerator, ReferenceNumberGenerator>();
 

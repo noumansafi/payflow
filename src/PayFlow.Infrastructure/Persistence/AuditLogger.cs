@@ -6,7 +6,8 @@ namespace PayFlow.Infrastructure.Persistence;
 
 public sealed class AuditLogger(
     PayFlowDbContext dbContext,
-    IDateTimeProvider clock) : IAuditLogger
+    IDateTimeProvider clock,
+    IClientInfo clientInfo) : IAuditLogger
 {
     public Task WriteAsync(
         AuditAction action,
@@ -25,7 +26,7 @@ public sealed class AuditLogger(
             EntityType = entityType,
             EntityId = entityId,
             Metadata = metadata,
-            IpAddress = ipAddress,
+            IpAddress = ipAddress ?? clientInfo.IpAddress,
             CreatedAtUtc = clock.UtcNow
         });
 

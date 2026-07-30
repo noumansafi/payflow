@@ -128,7 +128,7 @@ These are deliberate choices — not defaults.
 | **M5** | Transactions (history/query APIs) | ✅ Done |
 | **M6** | Beneficiaries | ✅ Done |
 | **M7** | Notifications | ✅ Done |
-| **M8** | Audit logs | ⬜ Planned |
+| **M8** | Audit logs | ✅ Done |
 | **M9** | Angular frontend | ⬜ Planned |
 | **M10** | Testing depth | ⬜ Planned |
 | **M11** | GitHub Actions | ⬜ Planned |
@@ -243,6 +243,7 @@ DELETE /api/v1/beneficiaries/{id}
 GET  /api/v1/notifications
 POST /api/v1/notifications/read-all
 POST /api/v1/notifications/{id}/read
+GET  /api/v1/admin/audit-logs
 ```
 
 Auth details: [docs/features/authentication.md](docs/features/authentication.md).
@@ -250,6 +251,7 @@ Transfer details: [docs/features/transfers.md](docs/features/transfers.md).
 Transaction history: [docs/features/transactions.md](docs/features/transactions.md).
 Beneficiaries: [docs/features/beneficiaries.md](docs/features/beneficiaries.md).
 Notifications: [docs/features/notifications.md](docs/features/notifications.md).
+Audit logs: [docs/features/audit-logs.md](docs/features/audit-logs.md).
 
 ### Swagger UI
 
