@@ -48,9 +48,10 @@ Ship vertical value in milestones. Each milestone should leave the solution **bu
 - List / mark-read / mark-all-read
 - Extension points for SignalR / email / push
 
-### Milestone 8 — Audit logs
-- Centralized audit recording
-- Queryability for security review demos
+### Milestone 8 — Audit logs ✅
+- Centralized audit recording (write path already wired)
+- Admin query API for security review demos
+- Client IP capture on audit writes
 
 ### Milestone 9 — Angular frontend
 - Auth flows, dashboard, wallet, transfer, history, beneficiaries, notifications, profile

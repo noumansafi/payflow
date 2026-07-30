@@ -1,64 +1,76 @@
 # Feature: Audit Logs
 
 **Milestone:** 8  
-**Status:** Planned
+**Status:** Done
 
 ## Purpose
 
-Provide a security and compliance trail for sensitive actions. In interviews, this shows you think beyond happy-path CRUD.
+Queryable security/compliance trail for sensitive actions. Distinct from Serilog ops logs: audit rows are business events you can filter in SQL/API demos.
 
-## Audited actions (minimum)
+## Audited actions
 
-- Login
-- Logout
-- Password change
-- Transfer
-- Wallet status change (freeze / activation)
-- Wallet activation
+| Action | When |
+|---|---|
+| `Login` | Successful login |
+| `Logout` | Logout / refresh revoke |
+| `PasswordChange` | Change password / reset password |
+| `Register` | New user registration |
+| `Transfer` | Successful P2P transfer (includes reference number in metadata) |
+| `WalletFreeze` / `WalletActivation` | Self-service wallet status change |
 
-## Model (target)
+## Model
 
 | Field | Description |
 |---|---|
 | Id | Primary key |
 | ActorUserId | Who performed the action (nullable for system) |
-| Action | Enum/string action name |
+| Action | `AuditAction` enum (stored as string) |
 | EntityType | e.g. Wallet, Transaction, User |
 | EntityId | Target entity |
-| Metadata | JSON details (no secrets/passwords) |
-| IpAddress | Optional, from HTTP context |
-| CreatedAt | UTC |
+| Metadata | Structured JSON (no secrets/passwords/tokens) |
+| IpAddress | Optional; explicit on auth commands, else from `IClientInfo` |
+| CreatedAtUtc | UTC |
+
+Indexes: `CreatedAtUtc`, `(ActorUserId, CreatedAtUtc)`, `(Action, CreatedAtUtc)`.
 
 ## Design rules
 
-- Append-oriented (no update/delete APIs for normal users)
-- Never store passwords or tokens in metadata
-- Prefer structured metadata over free text
-- Application layer decides *when* to audit; Infrastructure persists
+- Append-oriented (no update/delete APIs)
+- Never store passwords or raw tokens in metadata
+- Application decides *when* to audit; Infrastructure persists (`IAuditLogger`)
+- Read path is a separate port (`IAuditLogRepository`) — CQRS-style write vs read
+- Admin-only list: handler enforces role + controller `[Authorize(Roles = Admin)]`
 
-## API sketch
+## Commands / queries
+
+**Write:** existing handlers call `IAuditLogger.WriteAsync`  
+**Query:** `GetAuditLogs` (admin only)
+
+## API
 
 ```http
-GET /api/v1/admin/audit-logs   # admin-only in MVP demos
+GET /api/v1/admin/audit-logs?page=1&pageSize=20&action=Transfer&actorUserId={guid}&fromUtc=&toUtc=
 ```
 
-End-user self-service audit views are optional later.
+Non-admin → 403. Unauthenticated → 401.
 
 ## Tradeoffs
 
 | Choice | Rationale |
 |---|---|
-| First-class AuditLog table | Easy to demo and query |
-| vs relying only on Serilog sinks | Logs ≠ queryable business audit trail |
+| First-class `AuditLogs` table | Easy to demo and query |
+| vs Serilog only | Ops logs ≠ durable business audit trail |
 | Admin read API | Avoids exposing global audit to all users |
+| `IClientInfo` fallback for IP | Transfer/wallet audits get IP without widening every command DTO |
+| Dual admin check (JWT role + handler) | Early reject at edge; rule still testable in Application |
 
 ## Fintech note
 
-Regulated environments often require immutable audit storage, retention policies, and SIEM integration. PayFlow demonstrates the application-level audit model those systems build on.
+Regulated environments often require immutable storage, retention, and SIEM. PayFlow demonstrates the application-level audit model those systems build on.
 
 ## Acceptance criteria
 
-- [ ] Each listed action creates an audit row
+- [x] Listed sensitive actions create an audit row
 - [x] Transfer audit includes reference number (not secrets)
-- [ ] Non-admin cannot list global audit logs
-- [ ] Unit tests ensure handlers call audit port
+- [x] Non-admin cannot list global audit logs
+- [x] Unit tests cover admin list + forbid non-admin
