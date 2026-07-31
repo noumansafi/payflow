@@ -1,0 +1,55 @@
+<section class="page stack">
+  <div class="stack-sm">
+    <p class="page-subtitle">Recipients</p>
+    <h1 class="page-title">People</h1>
+  </div>
+
+  <form class="surface stack p-4" [formGroup]="lookupForm" (ngSubmit)="lookup()">
+    <div class="stack-sm">
+      <h2 class="text-sm font-semibold text-ink">Add someone</h2>
+      <p class="hint">Lookup first — confirm the name before saving.</p>
+    </div>
+    <label class="field">
+      <span class="label">PayFlow user id</span>
+      <input class="input font-mono text-sm" formControlName="userId" />
+    </label>
+    <button class="btn-secondary btn-block" type="submit" [disabled]="busy()">Look up</button>
+  </form>
+
+  @if (candidate(); as c) {
+    <div class="surface stack p-4 border border-primary/30">
+      <p class="chip w-fit">{{ c.alreadySaved ? 'Already saved' : 'Confirm' }}</p>
+      <div>
+        <p class="text-lg font-semibold text-ink">{{ c.firstName }} {{ c.lastName }}</p>
+        <p class="hint">{{ c.email }}</p>
+      </div>
+      @if (!c.alreadySaved) {
+        <button type="button" class="btn-primary btn-block" [disabled]="busy()" (click)="save()">
+          Save to People
+        </button>
+      }
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="empty-state">Loading…</div>
+  } @else if (!items().length) {
+    <div class="empty-state">No saved people yet.</div>
+  } @else {
+    <div class="surface px-3">
+      @for (person of items(); track person.id) {
+        <div class="list-row">
+          <span>
+            <span class="block font-medium text-ink">
+              {{ person.displayName || person.firstName + ' ' + person.lastName }}
+            </span>
+            <span class="hint">{{ person.email }}</span>
+          </span>
+          <button type="button" class="btn-ghost !px-2 !py-1 text-danger" (click)="remove(person)">
+            Remove
+          </button>
+        </div>
+      }
+    </div>
+  }
+</section>

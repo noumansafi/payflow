@@ -1,0 +1,61 @@
+<section class="page stack">
+  <div class="stack-sm">
+    <p class="page-subtitle">History</p>
+    <h1 class="page-title">Activity</h1>
+  </div>
+
+  <div class="flex gap-2">
+    <select
+      class="input !py-2"
+      [(ngModel)]="direction"
+      (ngModelChange)="reload()"
+      aria-label="Filter direction"
+    >
+      <option value="">All</option>
+      <option value="Sent">Sent</option>
+      <option value="Received">Received</option>
+    </select>
+    <a routerLink="/transfer" class="btn-primary shrink-0 !px-4 !py-2">Send</a>
+  </div>
+
+  @if (loading()) {
+    <div class="empty-state">Loading activity…</div>
+  } @else if (!items().length) {
+    <div class="empty-state">No transfers yet. Send your first one.</div>
+  } @else {
+    <div class="surface px-3">
+      @for (tx of items(); track tx.id) {
+        <button type="button" class="list-row w-full text-left" (click)="open(tx)">
+          <span>
+            <span class="block font-medium text-ink">{{ tx.direction }} · {{ tx.status }}</span>
+            <span class="hint">{{ tx.createdAtUtc | date: 'medium' }}</span>
+          </span>
+          <span
+            class="font-semibold"
+            [class.text-primary]="tx.direction === 'Received'"
+            [class.text-ink]="tx.direction !== 'Received'"
+          >
+            {{ tx.direction === 'Received' ? '+' : '−' }}{{ tx.amount | money }}
+          </span>
+        </button>
+      }
+    </div>
+  }
+
+  @if (selected(); as tx) {
+    <div class="fixed inset-0 z-40 flex items-end justify-center bg-ink/30 p-4 sm:items-center" (click)="closeDetail()">
+      <div class="surface stack w-full max-w-md p-5" (click)="$event.stopPropagation()">
+        <h2 class="text-lg font-bold text-ink">Transfer detail</h2>
+        <div class="list-row"><span class="hint">Reference</span><span class="font-mono text-sm">{{ tx.referenceNumber }}</span></div>
+        <div class="list-row"><span class="hint">Amount</span><span>{{ tx.amount | money }}</span></div>
+        <div class="list-row"><span class="hint">Fee</span><span>{{ tx.fee | money }}</span></div>
+        <div class="list-row"><span class="hint">Direction</span><span>{{ tx.direction }}</span></div>
+        <div class="list-row"><span class="hint">Status</span><span>{{ tx.status }}</span></div>
+        @if (tx.note) {
+          <div class="list-row"><span class="hint">Note</span><span>{{ tx.note }}</span></div>
+        }
+        <button type="button" class="btn-secondary btn-block" (click)="closeDetail()">Close</button>
+      </div>
+    </div>
+  }
+</section>

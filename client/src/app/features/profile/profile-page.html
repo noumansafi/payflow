@@ -1,0 +1,43 @@
+<section class="page stack">
+  <div class="stack-sm">
+    <p class="page-subtitle">Account</p>
+    <h1 class="page-title">Profile</h1>
+  </div>
+
+  @if (auth.user(); as user) {
+    <div class="surface stack p-4">
+      <p class="text-lg font-semibold text-ink">{{ user.firstName }} {{ user.lastName }}</p>
+      <p class="hint">{{ user.email }}</p>
+      <div class="flex flex-wrap gap-2">
+        <span class="chip">{{ user.role }}</span>
+        <span class="chip" [class.chip-accent]="!user.isEmailVerified">
+          {{ user.isEmailVerified ? 'Email verified' : 'Email unverified' }}
+        </span>
+      </div>
+      <p class="hint break-all">User id: {{ user.id }}</p>
+    </div>
+
+    <a routerLink="/wallet" class="btn-secondary btn-block text-center">Manage wallet</a>
+
+    @if (auth.isAdmin()) {
+      <a routerLink="/admin/audit-logs" class="btn-secondary btn-block text-center">Audit logs</a>
+    }
+
+    <form class="surface stack p-4" [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+      <h2 class="text-sm font-semibold text-ink">Change password</h2>
+      <label class="field">
+        <span class="label">Current password</span>
+        <input class="input" type="password" formControlName="currentPassword" />
+      </label>
+      <label class="field">
+        <span class="label">New password</span>
+        <input class="input" type="password" formControlName="newPassword" />
+      </label>
+      <button class="btn-primary btn-block" type="submit" [disabled]="busy()">Update password</button>
+    </form>
+
+    <button type="button" class="btn-ghost btn-block text-danger" [disabled]="busy()" (click)="logout()">
+      Sign out
+    </button>
+  }
+</section>

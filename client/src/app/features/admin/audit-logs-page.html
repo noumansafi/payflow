@@ -1,0 +1,40 @@
+<section class="page-wide stack">
+  <div class="stack-sm">
+    <p class="page-subtitle">Admin</p>
+    <h1 class="page-title">Audit logs</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="empty-state">Loading audit trail…</div>
+  } @else if (!items().length) {
+    <div class="empty-state">No audit events yet.</div>
+  } @else {
+    <div class="surface overflow-x-auto">
+      <table class="w-full min-w-[640px] text-left text-sm">
+        <thead class="border-b border-line text-ink-muted">
+          <tr>
+            <th class="px-3 py-3 font-medium">When</th>
+            <th class="px-3 py-3 font-medium">Action</th>
+            <th class="px-3 py-3 font-medium">Entity</th>
+            <th class="px-3 py-3 font-medium">IP</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (log of items(); track log.id) {
+            <tr class="border-b border-line last:border-b-0">
+              <td class="px-3 py-3 text-ink-muted">{{ log.createdAtUtc | date: 'short' }}</td>
+              <td class="px-3 py-3 font-medium text-ink">{{ log.action }}</td>
+              <td class="px-3 py-3 text-ink">
+                {{ log.entityType }}
+                @if (log.entityId) {
+                  <span class="hint block font-mono text-[11px]">{{ log.entityId }}</span>
+                }
+              </td>
+              <td class="px-3 py-3 text-ink-muted">{{ log.ipAddress || '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

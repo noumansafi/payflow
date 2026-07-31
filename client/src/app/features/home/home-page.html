@@ -55,6 +55,23 @@
       <h2 class="text-sm font-semibold text-ink">Recent activity</h2>
       <a routerLink="/transactions" class="text-sm font-medium">See all</a>
     </div>
-    <div class="empty-state !py-8">Recent transfers will appear here next.</div>
+
+    @if (!recent().length) {
+      <div class="empty-state !py-8">Your transfers will show up here.</div>
+    } @else {
+      <div>
+        @for (tx of recent(); track tx.id) {
+          <div class="list-row">
+            <span>
+              <span class="block font-medium text-ink">{{ tx.direction }}</span>
+              <span class="hint">{{ tx.createdAtUtc | date: 'mediumDate' }}</span>
+            </span>
+            <span class="font-semibold text-ink">
+              {{ tx.direction === 'Received' ? '+' : '−' }}{{ tx.amount | money }}
+            </span>
+          </div>
+        }
+      </div>
+    }
   </div>
 </section>

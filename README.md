@@ -130,7 +130,7 @@ These are deliberate choices — not defaults.
 | **M6** | Beneficiaries | ✅ Done |
 | **M7** | Notifications | ✅ Done |
 | **M8** | Audit logs | ✅ Done |
-| **M9** | Angular frontend | ⬜ Planned |
+| **M9** | Angular frontend | ✅ Done |
 | **M10** | Testing depth | ⬜ Planned |
 | **M11** | GitHub Actions | ⬜ Planned |
 | **M12** | Final documentation polish | ⬜ Planned |
@@ -292,6 +292,20 @@ docker compose up --build
 - SQL Server: `localhost,1433` (sa / `PayFlow_Strong_Passw0rd` — local demo only)
 
 In Development, the API applies EF migrations on startup.
+
+### Option B — Angular client (local)
+
+With the API running on port 8080:
+
+```bash
+cd client
+npm install
+npm start
+```
+
+- UI: `http://localhost:4200`
+- Proxied API: `/api/v1/*` → `http://localhost:8080`
+- Design decisions: [docs/frontend.md](docs/frontend.md)
 
 ### Option B — Local API + Docker SQL only
 

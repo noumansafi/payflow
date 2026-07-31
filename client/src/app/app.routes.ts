@@ -1,12 +1,16 @@
 import { Routes } from '@angular/router';
 import { adminGuard, authGuard, guestGuard } from './core/auth/auth.guards';
+import { AuditLogsPage } from './features/admin/audit-logs-page';
 import { ForgotPasswordPage } from './features/auth/forgot-password-page';
 import { LoginPage } from './features/auth/login-page';
 import { RegisterPage } from './features/auth/register-page';
 import { ResetPasswordPage } from './features/auth/reset-password-page';
 import { VerifyEmailPage } from './features/auth/verify-email-page';
+import { BeneficiariesPage } from './features/beneficiaries/beneficiaries-page';
 import { HomePage } from './features/home/home-page';
-import { PlaceholderPage } from './features/placeholder/placeholder-page';
+import { NotificationsPage } from './features/notifications/notifications-page';
+import { ProfilePage } from './features/profile/profile-page';
+import { TransactionsPage } from './features/transactions/transactions-page';
 import { TransferPage } from './features/transfer/transfer-page';
 import { WalletPage } from './features/wallet/wallet-page';
 import { AuthLayout } from './layout/auth-layout/auth-layout';
@@ -54,51 +58,15 @@ export const routes: Routes = [
     children: [
       { path: '', component: HomePage, title: 'Home · PayFlow' },
       { path: 'transfer', component: TransferPage, title: 'Send · PayFlow' },
-      {
-        path: 'transactions',
-        component: PlaceholderPage,
-        data: {
-          title: 'Activity',
-          description: 'Your transfer history with filters and reference lookup.',
-        },
-        title: 'Activity · PayFlow',
-      },
-      {
-        path: 'beneficiaries',
-        component: PlaceholderPage,
-        data: {
-          title: 'People',
-          description: 'Save frequent PayFlow recipients after a quick lookup.',
-        },
-        title: 'People · PayFlow',
-      },
-      {
-        path: 'notifications',
-        component: PlaceholderPage,
-        data: {
-          title: 'Alerts',
-          description: 'In-app notifications from transfers and account events.',
-        },
-        title: 'Alerts · PayFlow',
-      },
+      { path: 'transactions', component: TransactionsPage, title: 'Activity · PayFlow' },
+      { path: 'beneficiaries', component: BeneficiariesPage, title: 'People · PayFlow' },
+      { path: 'notifications', component: NotificationsPage, title: 'Alerts · PayFlow' },
       { path: 'wallet', component: WalletPage, title: 'Wallet · PayFlow' },
-      {
-        path: 'profile',
-        component: PlaceholderPage,
-        data: {
-          title: 'Profile',
-          description: 'Your account, password, and sign out.',
-        },
-        title: 'Profile · PayFlow',
-      },
+      { path: 'profile', component: ProfilePage, title: 'Profile · PayFlow' },
       {
         path: 'admin/audit-logs',
         canActivate: [adminGuard],
-        component: PlaceholderPage,
-        data: {
-          title: 'Audit logs',
-          description: 'Admin-only security trail for demos and reviews.',
-        },
+        component: AuditLogsPage,
         title: 'Audit · PayFlow',
       },
     ],
