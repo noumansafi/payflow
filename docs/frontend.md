@@ -1,7 +1,7 @@
 # Frontend (Angular)
 
 **Milestone:** 9  
-**Status:** Done
+**Status:** In progress — core screens wired; UI/UX refinement still required before closeout
 
 ## Why a dedicated frontend milestone
 
@@ -90,7 +90,7 @@ Open `http://localhost:4200`. API calls go to `/api/v1/*` via `proxy.conf.json` 
 | 5 | Transfer flow (lookup → amount → confirm) | Done |
 | 6 | Transactions + beneficiaries | Done |
 | 7 | Notifications + profile + admin audit | Done |
-| 8 | Polish + root README closeout | Done |
+| 8 | UI/UX refinement + polish closeout | In progress |
 
 ### Auth session notes
 

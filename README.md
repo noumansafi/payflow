@@ -130,7 +130,7 @@ These are deliberate choices — not defaults.
 | **M6** | Beneficiaries | ✅ Done |
 | **M7** | Notifications | ✅ Done |
 | **M8** | Audit logs | ✅ Done |
-| **M9** | Angular frontend | ✅ Done |
+| **M9** | Angular frontend | 🟡 In progress |
 | **M10** | Testing depth | ⬜ Planned |
 | **M11** | GitHub Actions | ⬜ Planned |
 | **M12** | Final documentation polish | ⬜ Planned |
