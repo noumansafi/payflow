@@ -15,7 +15,9 @@ npm start
 ```
 
 App: `http://localhost:4200`  
-API proxy: `/api` → `http://localhost:8080`
+API proxy: `/api` → `http://localhost:5079` (`dotnet run` default)
+
+If you run the API via Docker Compose instead, change `proxy.conf.json` target to `http://localhost:8080` and restart `npm start`.
 
 ## Design
 

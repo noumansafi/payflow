@@ -15,7 +15,8 @@ Backend architecture is the primary hiring signal. The Angular app proves full-s
 | Tailwind CSS (v4) | Fast, consistent UI without Material default look; utility-first keeps styles generic |
 | Shared component classes in `styles.css` | Avoids repeating long class strings / one-off hex in every template |
 | `client/` at repo root | Keeps the .NET solution clean; frontend is its own app |
-| Dev proxy → `localhost:8080` | Same-origin `/api/v1` in the browser; no CORS friction locally |
+| Dev proxy → `localhost:5079` | Same-origin `/api/v1` via Angular proxy (`dotnet run` port). Docker API uses `8080` — update `proxy.conf.json` if needed |
+| Dev CORS (`FrontendDev`) | Backup if the browser calls the API origin directly from `:4200` |
 | Light theme only | Product direction: bright, approachable wallet — no dark mode |
 
 We **do not** use Angular Material for this milestone (overridden from earlier roadmap notes) so the UI does not look like a stock admin kit.
@@ -75,7 +76,9 @@ cd client
 npm start
 ```
 
-Open `http://localhost:4200`. API calls go to `/api/v1/*` via `proxy.conf.json`.
+Open `http://localhost:4200`. API calls go to `/api/v1/*` via `proxy.conf.json` (defaults to `http://localhost:5079`).
+
+**Not CORS:** a `500` means the server threw. CORS failures show as browser “blocked by CORS policy” and usually never reach a normal JSON body. If login fails after a proxy port mismatch, restart `npm start` after fixing `proxy.conf.json`.
 
 ## Delivery slices
 

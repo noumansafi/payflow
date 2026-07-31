@@ -71,6 +71,17 @@ try
 
     builder.Services.AddAuthorization();
 
+    // Dev-only: Angular on :4200. Prefer the client proxy; CORS covers direct API calls too.
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(
+            "FrontendDev",
+            policy => policy
+                .WithOrigins("http://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod());
+    });
+
     var app = builder.Build();
 
     app.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -104,6 +115,11 @@ try
     {
         app.UsePayFlowSwagger();
         await MigrateDatabaseWithRetryAsync(app.Services);
+    }
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseCors("FrontendDev");
     }
 
     app.UseHttpsRedirection();

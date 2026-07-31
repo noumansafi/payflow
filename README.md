@@ -304,7 +304,7 @@ npm start
 ```
 
 - UI: `http://localhost:4200`
-- Proxied API: `/api/v1/*` → `http://localhost:8080`
+- Proxied API: `/api/v1/*` → `http://localhost:5079` (`dotnet run`; use `8080` in `proxy.conf.json` for Docker)
 - Design decisions: [docs/frontend.md](docs/frontend.md)
 
 ### Option B — Local API + Docker SQL only
