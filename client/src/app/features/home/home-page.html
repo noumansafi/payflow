@@ -1,13 +1,19 @@
 <section class="page stack">
   <div class="stack-sm">
-    <p class="page-subtitle">Welcome to</p>
+    <p class="page-subtitle">
+      @if (auth.user(); as user) {
+        Hi, {{ user.firstName }}
+      } @else {
+        Welcome
+      }
+    </p>
     <h1 class="page-title">Your wallet</h1>
   </div>
 
   <div class="balance-hero stack">
     <p class="text-sm font-medium text-white/85">Available balance</p>
     <p class="text-4xl font-bold tracking-tight">—</p>
-    <p class="text-sm text-white/80">Sign in to see your real balance</p>
+    <p class="text-sm text-white/80">Balance loads in the next slice</p>
   </div>
 
   <a routerLink="/transfer" class="btn-primary btn-block">Send money</a>

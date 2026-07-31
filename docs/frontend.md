@@ -79,16 +79,22 @@ Open `http://localhost:4200`. API calls go to `/api/v1/*` via `proxy.conf.json`.
 
 ## Delivery slices
 
-| Slice | Focus |
-|---|---|
-| 1 | Scaffold, Tailwind, tokens, docs |
-| 2 | App shell + route skeleton |
-| 3 | Auth (login/register/session) |
-| 4 | Home + wallet |
-| 5 | Transfer flow |
-| 6 | Transactions + beneficiaries |
-| 7 | Notifications + profile + admin audit |
-| 8 | Polish + root README / Compose notes |
+| Slice | Focus | Status |
+|---|---|---|
+| 1–2 | Scaffold, Tailwind tokens, shell, home skeleton | Done |
+| 3 | Auth (login/register/session, guards, interceptor) | Done |
+| 4 | Home + wallet | Next |
+| 5 | Transfer flow | Planned |
+| 6 | Transactions + beneficiaries | Planned |
+| 7 | Notifications + profile + admin audit | Planned |
+| 8 | Polish + root README / Compose notes | Planned |
+
+### Auth session notes
+
+- Access token kept in memory (signal); refresh token in `localStorage`
+- `authInterceptor` attaches Bearer and retries once after refresh on 401
+- `authGuard` / `guestGuard` / `adminGuard` protect routes
+- Dev-friendly verify/reset: tokens may appear in API logs or register response
 
 ## Out of scope (for now)
 

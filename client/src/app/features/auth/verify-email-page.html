@@ -1,0 +1,17 @@
+<form class="surface stack p-5" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="stack-sm">
+    <h1 class="page-title !text-xl">Verify email</h1>
+    <p class="page-subtitle">Confirm the token from registration (shown in-app in Development).</p>
+  </div>
+
+  <label class="field">
+    <span class="label">Verification token</span>
+    <textarea class="input min-h-24 font-mono text-xs" formControlName="token"></textarea>
+  </label>
+
+  <button class="btn-primary btn-block" type="submit" [disabled]="submitting()">
+    {{ submitting() ? 'Verifying…' : 'Verify email' }}
+  </button>
+
+  <a routerLink="/login" class="btn-ghost btn-block text-center">Back to sign in</a>
+</form>
