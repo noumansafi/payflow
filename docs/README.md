@@ -10,6 +10,7 @@ Portfolio documentation for architecture, features, and delivery roadmap.
 4. [architecture/persistence.md](architecture/persistence.md) — EF Core / SQL design
 5. [architecture/logging.md](architecture/logging.md) — Serilog structured ops logging
 6. [roadmap.md](roadmap.md) — milestone plan
+7. [frontend.md](frontend.md) — Angular UI decisions (M9)
 
 ## Features
 

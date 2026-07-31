@@ -59,7 +59,7 @@ PayFlow lets registered users:
 | Data | EF Core (Code First), SQL Server, Migrations |
 | Auth | JWT, Refresh Tokens, Role-based authorization |
 | Logging | Serilog (structured) over `ILogger<T>` |
-| Frontend | Angular 20, Angular Material, Signals, standalone components |
+| Frontend | Angular 20, Tailwind CSS, Signals, standalone components |
 | Quality | xUnit, FluentAssertions, unit + integration tests |
 | Platform | Docker, Docker Compose, GitHub Actions |
 
@@ -79,6 +79,7 @@ PayFlow/
 │   ├── PayFlow.Tests.Unit
 │   └── PayFlow.Tests.Integration
 ├── docs/                        # Feature & architecture documentation
+├── client/                      # Angular 20 wallet UI (Milestone 9)
 ├── docker/                      # Docker assets (added in Milestone 1)
 └── PayFlow.sln
 ```
@@ -271,7 +272,7 @@ Use **Authorize** with `Bearer {accessToken}` after login to call protected endp
 
 - .NET 10 SDK
 - Docker Desktop
-- Node 20+ (Angular milestone)
+- Node 20.19+ or 22+ (Angular client)
 
 ### Build & test
 

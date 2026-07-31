@@ -54,9 +54,9 @@ Ship vertical value in milestones. Each milestone should leave the solution **bu
 - Client IP capture on audit writes
 
 ### Milestone 9 — Angular frontend
-- Auth flows, dashboard, wallet, transfer, history, beneficiaries, notifications, profile
-- Material, signals, guards, interceptors
-- Light / dark theme
+- Auth flows, home, wallet, transfer, history, beneficiaries, notifications, profile
+- Tailwind CSS (SadaPay-inspired mint/peach, light theme), signals, guards, interceptors
+- UX tuned for non-technical demos (balance-first, confirm-before-send)
 
 ### Milestone 10 — Testing
 - Unit coverage for business rules
