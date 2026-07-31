@@ -83,7 +83,7 @@ Open `http://localhost:4200`. API calls go to `/api/v1/*` via `proxy.conf.json`.
 |---|---|---|
 | 1–2 | Scaffold, Tailwind tokens, shell, home skeleton | Done |
 | 3 | Auth (login/register/session, guards, interceptor) | Done |
-| 4 | Home + wallet | Next |
+| 4 | Home + wallet (balance, freeze, dev credit) | Done |
 | 5 | Transfer flow | Planned |
 | 6 | Transactions + beneficiaries | Planned |
 | 7 | Notifications + profile + admin audit | Planned |

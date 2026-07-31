@@ -11,18 +11,50 @@
   </div>
 
   <div class="balance-hero stack">
-    <p class="text-sm font-medium text-white/85">Available balance</p>
-    <p class="text-4xl font-bold tracking-tight">—</p>
-    <p class="text-sm text-white/80">Balance loads in the next slice</p>
+    <div class="flex items-center justify-between gap-3">
+      <p class="text-sm font-medium text-white/85">Available balance</p>
+      @if (balance(); as b) {
+        <span class="rounded-full bg-white/20 px-2.5 py-1 text-xs font-semibold text-white">
+          {{ b.status }}
+        </span>
+      }
+    </div>
+
+    @if (loading()) {
+      <p class="text-4xl font-bold tracking-tight">…</p>
+    } @else if (balance(); as b) {
+      <p class="text-4xl font-bold tracking-tight">{{ b.balance | money: b.currency }}</p>
+    } @else {
+      <p class="text-4xl font-bold tracking-tight">—</p>
+    }
+
+    <a routerLink="/wallet" class="text-sm font-medium text-white/90 underline-offset-2 hover:underline">
+      Manage wallet
+    </a>
   </div>
 
-  <a routerLink="/transfer" class="btn-primary btn-block">Send money</a>
+  @if (balance()?.status === 'Frozen') {
+    <div class="rounded-2xl bg-accent-soft px-4 py-3 text-sm text-ink">
+      Wallet is frozen.
+      <a routerLink="/wallet" class="font-semibold text-accent">Activate it</a>
+      to send money.
+    </div>
+  }
+
+  <a
+    routerLink="/transfer"
+    class="btn-primary btn-block"
+    [class.pointer-events-none]="balance()?.status === 'Frozen'"
+    [class.opacity-50]="balance()?.status === 'Frozen'"
+  >
+    Send money
+  </a>
 
   <div class="surface stack p-4">
     <div class="flex items-center justify-between">
       <h2 class="text-sm font-semibold text-ink">Recent activity</h2>
       <a routerLink="/transactions" class="text-sm font-medium">See all</a>
     </div>
-    <div class="empty-state !py-8">Your transfers will show up here.</div>
+    <div class="empty-state !py-8">Recent transfers will appear here next.</div>
   </div>
 </section>

@@ -7,6 +7,7 @@ import { ResetPasswordPage } from './features/auth/reset-password-page';
 import { VerifyEmailPage } from './features/auth/verify-email-page';
 import { HomePage } from './features/home/home-page';
 import { PlaceholderPage } from './features/placeholder/placeholder-page';
+import { WalletPage } from './features/wallet/wallet-page';
 import { AuthLayout } from './layout/auth-layout/auth-layout';
 import { Shell } from './layout/shell/shell';
 
@@ -87,15 +88,7 @@ export const routes: Routes = [
         },
         title: 'Alerts · PayFlow',
       },
-      {
-        path: 'wallet',
-        component: PlaceholderPage,
-        data: {
-          title: 'Wallet',
-          description: 'Check status, freeze/activate, and (in Development) credit funds.',
-        },
-        title: 'Wallet · PayFlow',
-      },
+      { path: 'wallet', component: WalletPage, title: 'Wallet · PayFlow' },
       {
         path: 'profile',
         component: PlaceholderPage,
