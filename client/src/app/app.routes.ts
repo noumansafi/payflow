@@ -7,6 +7,7 @@ import { ResetPasswordPage } from './features/auth/reset-password-page';
 import { VerifyEmailPage } from './features/auth/verify-email-page';
 import { HomePage } from './features/home/home-page';
 import { PlaceholderPage } from './features/placeholder/placeholder-page';
+import { TransferPage } from './features/transfer/transfer-page';
 import { WalletPage } from './features/wallet/wallet-page';
 import { AuthLayout } from './layout/auth-layout/auth-layout';
 import { Shell } from './layout/shell/shell';
@@ -52,15 +53,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: '', component: HomePage, title: 'Home · PayFlow' },
-      {
-        path: 'transfer',
-        component: PlaceholderPage,
-        data: {
-          title: 'Send money',
-          description: 'Lookup a recipient, confirm who they are, then send.',
-        },
-        title: 'Send · PayFlow',
-      },
+      { path: 'transfer', component: TransferPage, title: 'Send · PayFlow' },
       {
         path: 'transactions',
         component: PlaceholderPage,

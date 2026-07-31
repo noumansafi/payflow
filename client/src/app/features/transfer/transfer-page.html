@@ -1,0 +1,137 @@
+<section class="page stack">
+  <div class="stack-sm">
+    <p class="page-subtitle">Peer to peer</p>
+    <h1 class="page-title">Send money</h1>
+  </div>
+
+  @if (walletFrozen()) {
+    <div class="rounded-2xl bg-accent-soft px-4 py-3 text-sm text-ink">
+      Your wallet is frozen.
+      <a routerLink="/wallet" class="font-semibold text-accent">Activate it</a>
+      to send.
+    </div>
+  } @else {
+    <div class="flex gap-2 text-xs font-semibold text-ink-muted">
+      <span [class.text-primary]="step() === 'who'">1 · Who</span>
+      <span>·</span>
+      <span [class.text-primary]="step() === 'amount'">2 · Amount</span>
+      <span>·</span>
+      <span [class.text-primary]="step() === 'confirm' || step() === 'done'">3 · Confirm</span>
+    </div>
+
+    @switch (step()) {
+      @case ('who') {
+        <div class="stack">
+          @if (beneficiaries().length) {
+            <div class="surface stack p-4">
+              <h2 class="text-sm font-semibold text-ink">Saved people</h2>
+              @for (person of beneficiaries(); track person.id) {
+                <button type="button" class="list-row w-full text-left" (click)="pickBeneficiary(person)">
+                  <span>
+                    <span class="block font-medium text-ink">
+                      {{ person.displayName || person.firstName + ' ' + person.lastName }}
+                    </span>
+                    <span class="hint">{{ person.email }}</span>
+                  </span>
+                  <span class="text-primary text-sm font-semibold">Select</span>
+                </button>
+              }
+            </div>
+          }
+
+          <form class="surface stack p-4" [formGroup]="lookupForm" (ngSubmit)="lookup()">
+            <div class="stack-sm">
+              <h2 class="text-sm font-semibold text-ink">PayFlow user id</h2>
+              <p class="hint">We’ll show their name before you continue.</p>
+            </div>
+            <label class="field">
+              <span class="label">User id</span>
+              <input class="input font-mono text-sm" formControlName="userId" placeholder="guid" />
+            </label>
+            <button class="btn-secondary btn-block" type="submit" [disabled]="busy()">
+              {{ busy() ? 'Looking up…' : 'Look up' }}
+            </button>
+          </form>
+
+          @if (candidate(); as c) {
+            <div class="surface stack p-4 border border-primary/30">
+              <p class="chip w-fit">Confirm recipient</p>
+              <div>
+                <p class="text-lg font-semibold text-ink">{{ c.firstName }} {{ c.lastName }}</p>
+                <p class="hint">{{ c.email }}</p>
+              </div>
+              <button type="button" class="btn-primary btn-block" (click)="confirmRecipient()">
+                Continue with {{ c.firstName }}
+              </button>
+            </div>
+          }
+        </div>
+      }
+
+      @case ('amount') {
+        <form class="surface stack p-4" [formGroup]="amountForm" (ngSubmit)="continueToConfirm()">
+          <p class="page-subtitle">Sending to <span class="font-semibold text-ink">{{ recipientName() }}</span></p>
+          <label class="field">
+            <span class="label">Amount ({{ currency() }})</span>
+            <input class="input" type="number" step="0.01" min="0.01" formControlName="amount" />
+          </label>
+          <label class="field">
+            <span class="label">Note (optional)</span>
+            <input class="input" formControlName="note" maxlength="200" />
+          </label>
+          <button class="btn-primary btn-block" type="submit">Review transfer</button>
+          <button type="button" class="btn-ghost btn-block" (click)="backToWho()">Back</button>
+        </form>
+      }
+
+      @case ('confirm') {
+        <div class="surface stack p-4">
+          <h2 class="text-sm font-semibold text-ink">Please confirm</h2>
+          <div class="list-row">
+            <span class="hint">To</span>
+            <span class="font-medium text-ink">{{ recipientName() }}</span>
+          </div>
+          <div class="list-row">
+            <span class="hint">Amount</span>
+            <span class="font-medium text-ink">
+              {{ amountForm.controls.amount.value | money: currency() }}
+            </span>
+          </div>
+          @if (amountForm.controls.note.value) {
+            <div class="list-row">
+              <span class="hint">Note</span>
+              <span class="font-medium text-ink">{{ amountForm.controls.note.value }}</span>
+            </div>
+          }
+          <button type="button" class="btn-primary btn-block" [disabled]="busy()" (click)="send()">
+            {{ busy() ? 'Sending…' : 'Send now' }}
+          </button>
+          <button type="button" class="btn-ghost btn-block" (click)="backToAmount()">Back</button>
+        </div>
+      }
+
+      @case ('done') {
+        @if (result(); as r) {
+          <div class="surface stack p-5 text-center">
+            <p class="chip mx-auto">Sent</p>
+            <p class="page-title !text-xl">{{ r.amount | money: currency() }}</p>
+            <p class="page-subtitle">to {{ recipientName() }}</p>
+            <div class="rounded-xl bg-primary-soft px-3 py-3">
+              <p class="hint">Reference</p>
+              <p class="font-mono text-sm font-semibold text-ink">{{ r.referenceNumber }}</p>
+            </div>
+            @if (candidate(); as c) {
+              @if (!c.alreadySaved) {
+                <button type="button" class="btn-secondary btn-block" [disabled]="busy()" (click)="saveRecipient()">
+                  Save {{ c.firstName }} to People
+                </button>
+              }
+            }
+            <a routerLink="/transactions" class="btn-primary btn-block text-center">View activity</a>
+            <a routerLink="/" class="btn-ghost btn-block text-center">Home</a>
+          </div>
+        }
+      }
+    }
+  }
+</section>
