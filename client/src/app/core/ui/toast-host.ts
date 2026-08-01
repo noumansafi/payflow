@@ -24,11 +24,11 @@ export class ToastHost {
   toneClass(tone: 'success' | 'error' | 'info'): string {
     switch (tone) {
       case 'success':
-        return 'bg-primary text-white';
+        return 'bg-success text-white shadow-sm';
       case 'error':
-        return 'bg-danger text-white';
+        return 'bg-danger text-white shadow-sm';
       default:
-        return 'bg-ink text-white';
+        return 'bg-ink text-white shadow-sm';
     }
   }
 }
