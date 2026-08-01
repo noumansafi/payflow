@@ -48,15 +48,25 @@ export function groupTransactionsByDate(items: TransactionItem[]): TransactionGr
   return order.map((label) => ({ label, items: groups.get(label)! }));
 }
 
+/**
+ * Activity row title.
+ * API currently returns counterpartyWalletId only (no display name), so we keep
+ * direction-first copy. Prefer a short note when present; counterparty names are
+ * a follow-up once the API exposes them (or wallet→beneficiary mapping).
+ */
 export function counterpartyLabel(tx: TransactionItem): string {
-  const type = tx.transactionType || 'P2P Payment';
+  const note = tx.note?.trim();
+  if (note) {
+    return note.length > 40 ? `${note.slice(0, 37)}…` : note;
+  }
+
   if (tx.direction === 'Received') {
-    return `${type} received`;
+    return 'Money received';
   }
   if (tx.direction === 'Sent') {
-    return `${type} sent`;
+    return 'Money sent';
   }
-  return type;
+  return tx.transactionType || 'Transfer';
 }
 
 export function formatTxTime(iso: string): string {

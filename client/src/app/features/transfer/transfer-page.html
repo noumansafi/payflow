@@ -71,7 +71,7 @@
               <input
                 class="input border-0 bg-transparent py-3.5 pl-11 shadow-none focus:ring-0"
                 type="search"
-                placeholder="Search by user id, email, or name"
+                placeholder="Filter saved people, or paste a user id"
                 [value]="searchQuery()"
                 (input)="onSearch($any($event.target).value)"
                 (keydown.enter)="$event.preventDefault(); lookup()"
@@ -160,11 +160,7 @@
             >
               <span class="text-3xl text-slate-400">$</span>{{ displayAmount() }}
             </p>
-            <p class="mt-3 text-sm text-ink-muted">
-              Fee: {{ fee | money: currency() }}
-              <span class="mx-1.5 text-slate-300">·</span>
-              Instant transfer
-            </p>
+            <p class="mt-3 text-sm text-ink-muted">No fee on PayFlow transfers</p>
           </div>
 
           <label class="field">
@@ -220,11 +216,7 @@
             </div>
             <div class="flex items-center justify-between gap-3 border-b border-slate-100 py-3.5">
               <span class="text-sm text-ink-muted">Fee</span>
-              <span class="font-semibold tabular-nums text-ink">{{ fee | money: currency() }}</span>
-            </div>
-            <div class="flex items-center justify-between gap-3 border-b border-slate-100 py-3.5">
-              <span class="text-sm text-ink-muted">Speed</span>
-              <span class="font-semibold text-success">Instant</span>
+              <span class="font-semibold text-success">No fee</span>
             </div>
             @if (amountForm.controls.note.value) {
               <div class="flex items-center justify-between gap-3 py-3.5">
@@ -262,9 +254,17 @@
               <p class="mt-1 text-sm text-ink-muted">to {{ recipientName() }}</p>
             </div>
 
-            <div class="w-full rounded-xl bg-slate-50 px-4 py-3">
-              <p class="text-xs text-ink-muted">Reference</p>
-              <p class="mt-0.5 font-mono text-sm font-semibold text-ink">{{ r.referenceNumber }}</p>
+            <div class="w-full divide-y divide-slate-100 rounded-xl bg-slate-50 px-4">
+              <div class="flex items-center justify-between gap-3 py-3">
+                <span class="text-xs text-ink-muted">Reference</span>
+                <span class="font-mono text-sm font-semibold text-ink">{{ r.referenceNumber }}</span>
+              </div>
+              <div class="flex items-center justify-between gap-3 py-3">
+                <span class="text-xs text-ink-muted">Fee</span>
+                <span class="text-sm font-semibold tabular-nums text-ink">
+                  {{ r.fee === 0 ? 'No fee' : (r.fee | money: currency()) }}
+                </span>
+              </div>
             </div>
 
             @if (candidate(); as c) {

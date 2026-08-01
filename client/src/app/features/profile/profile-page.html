@@ -5,12 +5,12 @@
   </div>
 
   @if (auth.user(); as user) {
-    <div class="surface stack p-4">
+    <div class="surface stack p-5">
       <p class="text-lg font-semibold text-ink">{{ user.firstName }} {{ user.lastName }}</p>
-      <p class="hint">{{ user.email }}</p>
+      <p class="text-sm text-ink-muted">{{ user.email }}</p>
       <div class="flex flex-wrap gap-2">
         <span class="chip">{{ user.role }}</span>
-        <span class="chip" [class.chip-accent]="!user.isEmailVerified">
+        <span [class]="user.isEmailVerified ? 'chip-success' : 'chip-warning'">
           {{ user.isEmailVerified ? 'Email verified' : 'Email unverified' }}
         </span>
       </div>

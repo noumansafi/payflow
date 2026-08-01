@@ -81,8 +81,6 @@ export class TransferPage implements OnInit {
     return `${Number(whole || '0').toLocaleString()}.${fracPadded}`;
   });
 
-  readonly fee = 0;
-
   readonly keypadKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'back'] as const;
 
   readonly stepRank = computed(() => {

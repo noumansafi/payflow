@@ -14,13 +14,20 @@
   </button>
 
   @if (loading()) {
-    <div class="empty-state">Loading alerts…</div>
+    <div class="surface space-y-3 p-5" aria-busy="true">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="space-y-2">
+          <div class="skeleton h-3.5 w-1/2"></div>
+          <div class="skeleton h-3 w-3/4"></div>
+        </div>
+      }
+    </div>
   } @else if (!items().length) {
     <div class="empty-state">You’re all caught up.</div>
   } @else {
-    <div class="surface px-3">
+    <div class="surface overflow-hidden">
       @for (item of items(); track item.id) {
-        <button type="button" class="list-row w-full text-left" (click)="markRead(item)">
+        <button type="button" class="list-row w-full px-4 text-left sm:px-5" (click)="markRead(item)">
           <span class="min-w-0">
             <span class="flex items-center gap-2">
               <span class="font-medium text-ink">{{ item.title }}</span>
