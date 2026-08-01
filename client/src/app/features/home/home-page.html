@@ -1,77 +1,244 @@
 <section class="page stack">
-  <div class="stack-sm">
-    <p class="page-subtitle">
-      @if (auth.user(); as user) {
-        Hi, {{ user.firstName }}
-      } @else {
-        Welcome
-      }
-    </p>
-    <h1 class="page-title">Your wallet</h1>
-  </div>
-
-  <div class="balance-hero stack">
-    <div class="flex items-center justify-between gap-3">
-      <p class="text-sm font-medium text-white/85">Available balance</p>
-      @if (balance(); as b) {
-        <span class="rounded-full bg-white/20 px-2.5 py-1 text-xs font-semibold text-white">
-          {{ b.status }}
-        </span>
-      }
+  <!-- Header & profile bar -->
+  <header class="flex items-center justify-between gap-3">
+    <div class="flex min-w-0 items-center gap-3">
+      <app-avatar [name]="displayName()" size="md" [ariaLabel]="displayName()" />
+      <div class="min-w-0">
+        <p class="text-sm text-ink-muted">{{ greeting() }}</p>
+        <h1 class="truncate text-lg font-bold tracking-tight text-ink">{{ firstName() }}</h1>
+      </div>
     </div>
 
-    @if (loading()) {
-      <p class="text-4xl font-bold tracking-tight">…</p>
-    } @else if (balance(); as b) {
-      <p class="text-4xl font-bold tracking-tight">{{ b.balance | money: b.currency }}</p>
-    } @else {
-      <p class="text-4xl font-bold tracking-tight">—</p>
-    }
+    <div class="flex items-center gap-1">
+      <button
+        type="button"
+        class="btn-icon"
+        (click)="toggleHideBalance()"
+        [attr.aria-pressed]="hideBalance()"
+        [attr.aria-label]="hideBalance() ? 'Show balance' : 'Hide balance'"
+      >
+        <app-icon [name]="hideBalance() ? 'eye-off' : 'eye'" [size]="20" />
+      </button>
 
-    <a routerLink="/wallet" class="text-sm font-medium text-white/90 underline-offset-2 hover:underline">
-      Manage wallet
-    </a>
-  </div>
-
-  @if (balance()?.status === 'Frozen') {
-    <div class="rounded-2xl bg-accent-soft px-4 py-3 text-sm text-ink">
-      Wallet is frozen.
-      <a routerLink="/wallet" class="font-semibold text-accent">Activate it</a>
-      to send money.
+      <a
+        routerLink="/notifications"
+        class="btn-icon relative"
+        aria-label="Notifications"
+      >
+        <app-icon name="bell" [size]="20" />
+        @if (unreadCount() > 0) {
+          <span
+            class="absolute top-1.5 right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white"
+            aria-hidden="true"
+          >
+            {{ unreadCount() > 9 ? '9+' : unreadCount() }}
+          </span>
+        }
+      </a>
     </div>
-  }
+  </header>
 
-  <a
-    routerLink="/transfer"
-    class="btn-primary btn-block"
-    [class.pointer-events-none]="balance()?.status === 'Frozen'"
-    [class.opacity-50]="balance()?.status === 'Frozen'"
-  >
-    Send money
-  </a>
-
-  <div class="surface stack p-4">
-    <div class="flex items-center justify-between">
-      <h2 class="text-sm font-semibold text-ink">Recent activity</h2>
-      <a routerLink="/transactions" class="text-sm font-medium">See all</a>
-    </div>
-
-    @if (!recent().length) {
-      <div class="empty-state !py-8">Your transfers will show up here.</div>
-    } @else {
+  <!-- Hero balance card -->
+  <section class="balance-hero" aria-labelledby="balance-heading">
+    <div class="flex items-start justify-between gap-3">
       <div>
-        @for (tx of recent(); track tx.id) {
-          <div class="list-row">
-            <span>
-              <span class="block font-medium text-ink">{{ tx.direction }}</span>
-              <span class="hint">{{ tx.createdAtUtc | date: 'mediumDate' }}</span>
-            </span>
-            <span class="font-semibold text-ink">
-              {{ tx.direction === 'Received' ? '+' : '−' }}{{ tx.amount | money }}
-            </span>
-          </div>
+        <p id="balance-heading" class="text-sm font-medium text-ink-muted">Available balance</p>
+        @if (loading()) {
+          <div class="mt-2 skeleton h-10 w-48" aria-hidden="true"></div>
+          <span class="sr-only">Loading balance</span>
+        } @else if (balance(); as b) {
+          <p
+            class="mt-1 text-4xl font-bold tracking-tight text-ink tabular-nums sm:text-[2.5rem]"
+            [attr.aria-label]="hideBalance() ? 'Balance hidden' : 'Balance ' + (b.balance | money: b.currency)"
+          >
+            @if (hideBalance()) {
+              {{ maskedBalance }}
+            } @else {
+              {{ b.balance | money: b.currency }}
+            }
+          </p>
+          <p class="mt-1 text-sm font-medium text-slate-500">
+            {{ b.currency }}
+            <span class="mx-1.5 text-slate-300">·</span>
+            Fiat wallet
+          </p>
+        } @else {
+          <p class="mt-1 text-4xl font-bold text-ink">—</p>
         }
       </div>
+
+      @if (balance(); as b) {
+        <app-status-badge [status]="b.status" />
+      }
+    </div>
+
+    @if (balance()?.status === 'Frozen') {
+      <div class="mt-4 rounded-xl bg-warning-soft px-3.5 py-3 text-sm text-amber-900">
+        Wallet is frozen.
+        <a routerLink="/wallet" class="font-semibold text-warning">Activate it</a>
+        to send money.
+      </div>
     }
-  </div>
+
+    <!-- Quick actions -->
+    <div
+      class="mt-5 grid grid-cols-4 gap-1 border-t border-slate-100 pt-5"
+      role="navigation"
+      aria-label="Quick actions"
+    >
+      <a
+        routerLink="/transfer"
+        class="quick-action group"
+        [class.pointer-events-none]="balance()?.status === 'Frozen'"
+        [class.opacity-40]="balance()?.status === 'Frozen'"
+      >
+        <span class="quick-action-icon">
+          <app-icon name="send" [size]="20" />
+        </span>
+        <span class="text-xs font-semibold text-ink">Send</span>
+      </a>
+
+      <a routerLink="/beneficiaries" class="quick-action group">
+        <span class="quick-action-icon !bg-success-soft !text-success group-hover:!bg-emerald-100">
+          <app-icon name="receive" [size]="20" />
+        </span>
+        <span class="text-xs font-semibold text-ink">Request</span>
+      </a>
+
+      <a routerLink="/wallet" class="quick-action group">
+        <span class="quick-action-icon !bg-sky-50 !text-sky-700 group-hover:!bg-sky-100">
+          <app-icon name="plus" [size]="20" />
+        </span>
+        <span class="text-xs font-semibold text-ink">Top up</span>
+      </a>
+
+      <a routerLink="/transactions" class="quick-action group">
+        <span class="quick-action-icon !bg-slate-100 !text-slate-700 group-hover:!bg-slate-200">
+          <app-icon name="statement" [size]="20" />
+        </span>
+        <span class="text-xs font-semibold text-ink">Statement</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- P2P Quick-Pay strip -->
+  <section aria-labelledby="quick-pay-heading">
+    <div class="mb-3 flex items-center justify-between">
+      <h2 id="quick-pay-heading" class="text-sm font-semibold text-ink">Send again</h2>
+      <a routerLink="/beneficiaries" class="text-sm font-semibold text-primary">All people</a>
+    </div>
+
+    <div
+      class="-mx-4 flex gap-4 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      role="list"
+    >
+      <a
+        routerLink="/beneficiaries"
+        class="flex w-16 shrink-0 flex-col items-center gap-2"
+        role="listitem"
+      >
+        <span
+          class="flex h-14 w-14 items-center justify-center rounded-full border-2 border-dashed border-slate-300 bg-white text-primary transition hover:border-primary hover:bg-primary-soft"
+        >
+          <app-icon name="user-plus" [size]="22" />
+        </span>
+        <span class="w-full truncate text-center text-xs font-medium text-ink-muted">Add</span>
+      </a>
+
+      @for (person of favorites(); track person.id) {
+        <a
+          routerLink="/transfer"
+          [queryParams]="{ to: person.beneficiaryUserId }"
+          class="flex w-16 shrink-0 flex-col items-center gap-2"
+          role="listitem"
+          [attr.aria-label]="'Send again to ' + personName(person)"
+        >
+          <app-avatar [name]="personName(person)" size="lg" />
+          <span class="w-full truncate text-center text-xs font-medium text-ink">
+            {{ person.firstName }}
+          </span>
+        </a>
+      }
+    </div>
+  </section>
+
+  <!-- Transaction feed widget -->
+  <section aria-labelledby="activity-heading">
+    <div class="mb-3 flex items-center justify-between">
+      <h2 id="activity-heading" class="text-sm font-semibold text-ink">Recent activity</h2>
+      <a routerLink="/transactions" class="text-sm font-semibold text-primary">See all</a>
+    </div>
+
+    <div class="surface overflow-hidden">
+      @if (recentLoading()) {
+        <div class="space-y-3 p-5" aria-busy="true" aria-label="Loading activity">
+          @for (i of [1, 2, 3]; track i) {
+            <div class="flex items-center gap-3">
+              <div class="skeleton h-11 w-11 rounded-full"></div>
+              <div class="flex-1 space-y-2">
+                <div class="skeleton h-3.5 w-2/3"></div>
+                <div class="skeleton h-3 w-1/3"></div>
+              </div>
+              <div class="skeleton h-4 w-16"></div>
+            </div>
+          }
+        </div>
+      } @else if (!recent().length) {
+        <div class="empty-state !rounded-2xl !border-0 py-10">
+          <p class="font-medium text-ink">No activity yet</p>
+          <p class="mt-1 text-ink-muted">Your transfers will show up here.</p>
+          <a routerLink="/transfer" class="btn-soft mt-4 inline-flex">Send money</a>
+        </div>
+      } @else {
+        @for (group of groups(); track group.label) {
+          <div>
+            <p class="section-label bg-slate-50/80 px-5 py-2.5">{{ group.label }}</p>
+            <ul class="divide-y divide-slate-100" role="list">
+              @for (tx of group.items; track tx.id) {
+                <li>
+                  <a
+                    routerLink="/transactions"
+                    class="flex items-center gap-3 px-5 py-3.5 transition hover:bg-slate-50/80"
+                  >
+                    <span
+                      class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
+                      [class]="
+                        tx.direction === 'Received'
+                          ? 'bg-success-soft text-success'
+                          : 'bg-slate-100 text-slate-700'
+                      "
+                      aria-hidden="true"
+                    >
+                      <app-icon
+                        [name]="tx.direction === 'Received' ? 'arrow-down' : 'arrow-up'"
+                        [size]="18"
+                      />
+                    </span>
+
+                    <span class="min-w-0 flex-1">
+                      <span class="block truncate text-sm font-semibold text-ink">
+                        {{ txLabel(tx) }}
+                      </span>
+                      <span class="mt-0.5 flex items-center gap-2 text-xs text-ink-muted">
+                        <time [attr.datetime]="tx.createdAtUtc">{{ txTime(tx) }}</time>
+                        <app-status-badge [status]="tx.status" />
+                      </span>
+                    </span>
+
+                    <span
+                      class="shrink-0 text-sm font-bold tabular-nums"
+                      [class.text-success]="tx.direction === 'Received'"
+                      [class.text-ink]="tx.direction !== 'Received'"
+                    >
+                      {{ tx.direction === 'Received' ? '+' : '−' }}{{ tx.amount | money }}
+                    </span>
+                  </a>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      }
+    </div>
+  </section>
 </section>
