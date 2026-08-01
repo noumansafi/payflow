@@ -1,134 +1,289 @@
 <section class="page stack">
-  <div class="stack-sm">
-    <p class="page-subtitle">Peer to peer</p>
-    <h1 class="page-title">Send money</h1>
-  </div>
+  <header class="stack-sm">
+    <div class="flex items-center gap-2">
+      @if (step() !== 'who' && step() !== 'done') {
+        <button
+          type="button"
+          class="btn-icon -ml-2"
+          (click)="step() === 'confirm' ? backToAmount() : backToWho()"
+          aria-label="Go back"
+        >
+          <app-icon name="arrow-left" [size]="20" />
+        </button>
+      }
+      <div>
+        <p class="page-subtitle">Peer to peer</p>
+        <h1 class="page-title">Send money</h1>
+      </div>
+    </div>
+  </header>
 
   @if (walletFrozen()) {
-    <div class="rounded-2xl bg-accent-soft px-4 py-3 text-sm text-ink">
+    <div class="rounded-2xl border border-amber-200 bg-warning-soft px-4 py-3.5 text-sm text-amber-900">
       Your wallet is frozen.
-      <a routerLink="/wallet" class="font-semibold text-accent">Activate it</a>
+      <a routerLink="/wallet" class="font-semibold text-warning">Activate it</a>
       to send.
     </div>
   } @else {
-    <div class="flex gap-2 text-xs font-semibold text-ink-muted">
-      <span [class.text-primary]="step() === 'who'">1 · Who</span>
-      <span>·</span>
-      <span [class.text-primary]="step() === 'amount'">2 · Amount</span>
-      <span>·</span>
-      <span [class.text-primary]="step() === 'confirm' || step() === 'done'">3 · Confirm</span>
-    </div>
+    <!-- Progress -->
+    @if (step() !== 'done') {
+      <ol class="flex items-center gap-2" aria-label="Transfer progress">
+        @for (item of [
+          { key: 'who', label: 'Recipient', rank: 1 },
+          { key: 'amount', label: 'Amount', rank: 2 },
+          { key: 'confirm', label: 'Confirm', rank: 3 },
+        ]; track item.key; let i = $index) {
+          <li class="flex flex-1 items-center gap-2">
+            <span
+              class="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold"
+              [class]="
+                item.rank <= stepRank()
+                  ? 'bg-primary text-white'
+                  : 'bg-slate-100 text-slate-400'
+              "
+            >
+              {{ i + 1 }}
+            </span>
+            <span
+              class="hidden text-xs font-semibold sm:inline"
+              [class.text-ink]="step() === item.key"
+              [class.text-ink-muted]="step() !== item.key"
+            >
+              {{ item.label }}
+            </span>
+            @if (i < 2) {
+              <span class="mx-1 h-px flex-1 bg-slate-200" aria-hidden="true"></span>
+            }
+          </li>
+        }
+      </ol>
+    }
 
     @switch (step()) {
       @case ('who') {
         <div class="stack">
-          @if (beneficiaries().length) {
-            <div class="surface stack p-4">
-              <h2 class="text-sm font-semibold text-ink">Saved people</h2>
-              @for (person of beneficiaries(); track person.id) {
-                <button type="button" class="list-row w-full text-left" (click)="pickBeneficiary(person)">
-                  <span>
-                    <span class="block font-medium text-ink">
-                      {{ person.displayName || person.firstName + ' ' + person.lastName }}
-                    </span>
-                    <span class="hint">{{ person.email }}</span>
-                  </span>
-                  <span class="text-primary text-sm font-semibold">Select</span>
-                </button>
-              }
-            </div>
-          }
-
-          <form class="surface stack p-4" [formGroup]="lookupForm" (ngSubmit)="lookup()">
-            <div class="stack-sm">
-              <h2 class="text-sm font-semibold text-ink">PayFlow user id</h2>
-              <p class="hint">We’ll show their name before you continue.</p>
-            </div>
-            <label class="field">
-              <span class="label">User id</span>
-              <input class="input font-mono text-sm" formControlName="userId" placeholder="guid" />
+          <!-- Search -->
+          <div class="surface p-2">
+            <label class="relative flex items-center">
+              <span class="pointer-events-none absolute left-3.5 text-slate-400">
+                <app-icon name="search" [size]="18" />
+              </span>
+              <input
+                class="input border-0 bg-transparent py-3.5 pl-11 shadow-none focus:ring-0"
+                type="search"
+                placeholder="Search by user id, email, or name"
+                [value]="searchQuery()"
+                (input)="onSearch($any($event.target).value)"
+                (keydown.enter)="$event.preventDefault(); lookup()"
+                aria-label="Search recipient"
+                autocomplete="off"
+              />
             </label>
-            <button class="btn-secondary btn-block" type="submit" [disabled]="busy()">
-              {{ busy() ? 'Looking up…' : 'Look up' }}
-            </button>
-          </form>
+          </div>
+
+          <button
+            type="button"
+            class="btn-secondary btn-block"
+            [disabled]="busy()"
+            (click)="lookup()"
+          >
+            {{ busy() ? 'Looking up…' : 'Look up user id' }}
+          </button>
 
           @if (candidate(); as c) {
-            <div class="surface stack p-4 border border-primary/30">
+            <div class="surface stack p-5 border-primary/25 ring-1 ring-primary/10">
               <p class="chip w-fit">Confirm recipient</p>
-              <div>
-                <p class="text-lg font-semibold text-ink">{{ c.firstName }} {{ c.lastName }}</p>
-                <p class="hint">{{ c.email }}</p>
+              <div class="flex items-center gap-3">
+                <app-avatar [name]="c.firstName + ' ' + c.lastName" size="lg" />
+                <div class="min-w-0">
+                  <p class="truncate text-lg font-bold text-ink">{{ c.firstName }} {{ c.lastName }}</p>
+                  <p class="truncate text-sm text-ink-muted">{{ c.email }}</p>
+                </div>
               </div>
               <button type="button" class="btn-primary btn-block" (click)="confirmRecipient()">
                 Continue with {{ c.firstName }}
               </button>
             </div>
           }
+
+          @if (filteredBeneficiaries().length) {
+            <div>
+              <h2 class="section-label mb-2 px-1">Saved people</h2>
+              <div class="surface overflow-hidden">
+                <ul class="divide-y divide-slate-100" role="list">
+                  @for (person of filteredBeneficiaries(); track person.id) {
+                    <li>
+                      <button
+                        type="button"
+                        class="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-slate-50"
+                        (click)="pickBeneficiary(person)"
+                      >
+                        <app-avatar [name]="personName(person)" />
+                        <span class="min-w-0 flex-1">
+                          <span class="block truncate text-sm font-semibold text-ink">
+                            {{ personName(person) }}
+                          </span>
+                          <span class="block truncate text-xs text-ink-muted">{{ person.email }}</span>
+                        </span>
+                        <span class="text-sm font-semibold text-primary">Select</span>
+                      </button>
+                    </li>
+                  }
+                </ul>
+              </div>
+            </div>
+          } @else if (searchQuery() && !busy()) {
+            <div class="empty-state">
+              No saved matches. Paste a PayFlow user id and tap Look up.
+            </div>
+          }
         </div>
       }
 
       @case ('amount') {
-        <form class="surface stack p-4" [formGroup]="amountForm" (ngSubmit)="continueToConfirm()">
-          <p class="page-subtitle">Sending to <span class="font-semibold text-ink">{{ recipientName() }}</span></p>
+        <div class="stack">
+          <div class="text-center">
+            <p class="text-sm text-ink-muted">
+              Sending to
+              <span class="font-semibold text-ink">{{ recipientName() }}</span>
+            </p>
+          </div>
+
+          <div class="surface stack items-center px-5 py-8 text-center">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Amount ({{ currency() }})
+            </p>
+            <p
+              class="mt-2 text-5xl font-bold tracking-tight text-ink tabular-nums"
+              aria-live="polite"
+              [attr.aria-label]="'Amount ' + displayAmount() + ' ' + currency()"
+            >
+              <span class="text-3xl text-slate-400">$</span>{{ displayAmount() }}
+            </p>
+            <p class="mt-3 text-sm text-ink-muted">
+              Fee: {{ fee | money: currency() }}
+              <span class="mx-1.5 text-slate-300">·</span>
+              Instant transfer
+            </p>
+          </div>
+
           <label class="field">
-            <span class="label">Amount ({{ currency() }})</span>
-            <input class="input" type="number" step="0.01" min="0.01" formControlName="amount" />
+            <span class="label">Note <span class="font-normal text-ink-muted">(optional)</span></span>
+            <input
+              class="input"
+              [formControl]="amountForm.controls.note"
+              maxlength="200"
+              placeholder="What's this for?"
+            />
           </label>
-          <label class="field">
-            <span class="label">Note (optional)</span>
-            <input class="input" formControlName="note" maxlength="200" />
-          </label>
-          <button class="btn-primary btn-block" type="submit">Review transfer</button>
-          <button type="button" class="btn-ghost btn-block" (click)="backToWho()">Back</button>
-        </form>
+
+          <!-- Keypad -->
+          <div class="grid grid-cols-3 gap-2" role="group" aria-label="Amount keypad">
+            @for (key of keypadKeys; track key) {
+              <button
+                type="button"
+                class="keypad-btn"
+                (click)="pressKey(key)"
+                [attr.aria-label]="key === 'back' ? 'Backspace' : key === '.' ? 'Decimal' : key"
+              >
+                @if (key === 'back') {
+                  <app-icon name="backspace" [size]="22" />
+                } @else {
+                  {{ key }}
+                }
+              </button>
+            }
+          </div>
+
+          <button type="button" class="btn-primary btn-block" (click)="continueToConfirm()">
+            Review transfer
+          </button>
+        </div>
       }
 
       @case ('confirm') {
-        <div class="surface stack p-4">
-          <h2 class="text-sm font-semibold text-ink">Please confirm</h2>
-          <div class="list-row">
-            <span class="hint">To</span>
-            <span class="font-medium text-ink">{{ recipientName() }}</span>
-          </div>
-          <div class="list-row">
-            <span class="hint">Amount</span>
-            <span class="font-medium text-ink">
+        <div class="surface stack p-5 sm:p-6">
+          <div class="text-center">
+            <p class="text-sm text-ink-muted">You're sending</p>
+            <p class="mt-1 text-4xl font-bold tabular-nums text-ink">
               {{ amountForm.controls.amount.value | money: currency() }}
-            </span>
+            </p>
           </div>
-          @if (amountForm.controls.note.value) {
-            <div class="list-row">
-              <span class="hint">Note</span>
-              <span class="font-medium text-ink">{{ amountForm.controls.note.value }}</span>
+
+          <div class="rounded-xl bg-slate-50 px-4">
+            <div class="flex items-center justify-between gap-3 border-b border-slate-100 py-3.5 last:border-b-0">
+              <span class="text-sm text-ink-muted">To</span>
+              <span class="flex items-center gap-2 font-semibold text-ink">
+                <app-avatar [name]="recipientName()" size="sm" />
+                {{ recipientName() }}
+              </span>
             </div>
-          }
+            <div class="flex items-center justify-between gap-3 border-b border-slate-100 py-3.5">
+              <span class="text-sm text-ink-muted">Fee</span>
+              <span class="font-semibold tabular-nums text-ink">{{ fee | money: currency() }}</span>
+            </div>
+            <div class="flex items-center justify-between gap-3 border-b border-slate-100 py-3.5">
+              <span class="text-sm text-ink-muted">Speed</span>
+              <span class="font-semibold text-success">Instant</span>
+            </div>
+            @if (amountForm.controls.note.value) {
+              <div class="flex items-center justify-between gap-3 py-3.5">
+                <span class="text-sm text-ink-muted">Note</span>
+                <span class="max-w-[60%] truncate font-medium text-ink">
+                  {{ amountForm.controls.note.value }}
+                </span>
+              </div>
+            }
+          </div>
+
           <button type="button" class="btn-primary btn-block" [disabled]="busy()" (click)="send()">
             {{ busy() ? 'Sending…' : 'Send now' }}
           </button>
-          <button type="button" class="btn-ghost btn-block" (click)="backToAmount()">Back</button>
+          <button type="button" class="btn-ghost btn-block" (click)="backToAmount()">
+            Edit amount
+          </button>
         </div>
       }
 
       @case ('done') {
         @if (result(); as r) {
-          <div class="surface stack p-5 text-center">
-            <p class="chip mx-auto">Sent</p>
-            <p class="page-title !text-xl">{{ r.amount | money: currency() }}</p>
-            <p class="page-subtitle">to {{ recipientName() }}</p>
-            <div class="rounded-xl bg-primary-soft px-3 py-3">
-              <p class="hint">Reference</p>
-              <p class="font-mono text-sm font-semibold text-ink">{{ r.referenceNumber }}</p>
+          <div class="surface stack items-center p-6 text-center sm:p-8">
+            <span
+              class="flex h-16 w-16 items-center justify-center rounded-full bg-success-soft text-success"
+              aria-hidden="true"
+            >
+              <app-icon name="check" [size]="32" />
+            </span>
+            <div>
+              <p class="text-sm font-semibold text-success">Sent successfully</p>
+              <p class="mt-2 text-3xl font-bold tabular-nums text-ink">
+                {{ r.amount | money: currency() }}
+              </p>
+              <p class="mt-1 text-sm text-ink-muted">to {{ recipientName() }}</p>
             </div>
+
+            <div class="w-full rounded-xl bg-slate-50 px-4 py-3">
+              <p class="text-xs text-ink-muted">Reference</p>
+              <p class="mt-0.5 font-mono text-sm font-semibold text-ink">{{ r.referenceNumber }}</p>
+            </div>
+
             @if (candidate(); as c) {
               @if (!c.alreadySaved) {
-                <button type="button" class="btn-secondary btn-block" [disabled]="busy()" (click)="saveRecipient()">
+                <button
+                  type="button"
+                  class="btn-secondary btn-block"
+                  [disabled]="busy()"
+                  (click)="saveRecipient()"
+                >
                   Save {{ c.firstName }} to People
                 </button>
               }
             }
+
             <a routerLink="/transactions" class="btn-primary btn-block text-center">View activity</a>
-            <a routerLink="/" class="btn-ghost btn-block text-center">Home</a>
+            <button type="button" class="btn-ghost btn-block" (click)="resetFlow()">
+              Send another
+            </button>
           </div>
         }
       }

@@ -1,59 +1,174 @@
 <section class="page stack">
-  <div class="stack-sm">
-    <p class="page-subtitle">History</p>
-    <h1 class="page-title">Activity</h1>
-  </div>
+  <header class="flex items-start justify-between gap-3">
+    <div class="stack-sm">
+      <p class="page-subtitle">History</p>
+      <h1 class="page-title">Activity</h1>
+    </div>
+    <a routerLink="/transfer" class="btn-primary !px-3.5 !py-2.5">
+      <app-icon name="send" [size]="16" />
+      Send
+    </a>
+  </header>
 
-  <div class="flex gap-2">
-    <select
-      class="input !py-2"
-      [(ngModel)]="direction"
-      (ngModelChange)="reload()"
-      aria-label="Filter direction"
-    >
-      <option value="">All</option>
-      <option value="Sent">Sent</option>
-      <option value="Received">Received</option>
-    </select>
-    <a routerLink="/transfer" class="btn-primary shrink-0 !px-4 !py-2">Send</a>
+  <!-- Filter tabs -->
+  <div
+    class="flex gap-1.5 overflow-x-auto rounded-2xl bg-slate-100/80 p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    role="tablist"
+    aria-label="Filter activity"
+  >
+    @for (tab of tabs; track tab.id) {
+      <button
+        type="button"
+        role="tab"
+        class="filter-tab flex-1"
+        [class.filter-tab-active]="filter() === tab.id"
+        [attr.aria-selected]="filter() === tab.id"
+        (click)="setFilter(tab.id)"
+      >
+        {{ tab.label }}
+      </button>
+    }
   </div>
 
   @if (loading()) {
-    <div class="empty-state">Loading activity…</div>
+    <div class="surface space-y-4 p-5" aria-busy="true" aria-label="Loading activity">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="flex items-center gap-3">
+          <div class="skeleton h-11 w-11 rounded-full"></div>
+          <div class="flex-1 space-y-2">
+            <div class="skeleton h-3.5 w-2/3"></div>
+            <div class="skeleton h-3 w-1/3"></div>
+          </div>
+          <div class="skeleton h-4 w-16"></div>
+        </div>
+      }
+    </div>
   } @else if (!items().length) {
-    <div class="empty-state">No transfers yet. Send your first one.</div>
+    <div class="empty-state">
+      <p class="font-medium text-ink">No transfers yet</p>
+      <p class="mt-1">Send your first one to get started.</p>
+      <a routerLink="/transfer" class="btn-soft mt-4 inline-flex">Send money</a>
+    </div>
   } @else {
-    <div class="surface px-3">
-      @for (tx of items(); track tx.id) {
-        <button type="button" class="list-row w-full text-left" (click)="open(tx)">
-          <span>
-            <span class="block font-medium text-ink">{{ tx.direction }} · {{ tx.status }}</span>
-            <span class="hint">{{ tx.createdAtUtc | date: 'medium' }}</span>
-          </span>
-          <span
-            class="font-semibold"
-            [class.text-primary]="tx.direction === 'Received'"
-            [class.text-ink]="tx.direction !== 'Received'"
-          >
-            {{ tx.direction === 'Received' ? '+' : '−' }}{{ tx.amount | money }}
-          </span>
-        </button>
+    <div class="stack gap-4">
+      @for (group of groups(); track group.label) {
+        <section [attr.aria-labelledby]="'group-' + group.label">
+          <h2 [id]="'group-' + group.label" class="section-label mb-2 px-1">
+            {{ group.label }}
+          </h2>
+          <div class="surface overflow-hidden">
+            <ul class="divide-y divide-slate-100" role="list">
+              @for (tx of group.items; track tx.id) {
+                <li>
+                  <button
+                    type="button"
+                    class="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-slate-50 active:bg-slate-100/80 sm:px-5"
+                    (click)="open(tx)"
+                  >
+                    <span
+                      class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
+                      [class]="
+                        tx.direction === 'Received'
+                          ? 'bg-success-soft text-success'
+                          : 'bg-slate-100 text-slate-700'
+                      "
+                      aria-hidden="true"
+                    >
+                      <app-icon
+                        [name]="tx.direction === 'Received' ? 'arrow-down' : 'arrow-up'"
+                        [size]="18"
+                      />
+                    </span>
+
+                    <span class="min-w-0 flex-1">
+                      <span class="block truncate text-sm font-semibold text-ink">
+                        {{ txLabel(tx) }}
+                      </span>
+                      <span class="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-ink-muted">
+                        <time [attr.datetime]="tx.createdAtUtc">
+                          {{ tx.createdAtUtc | date: 'MMM d' }} · {{ txTime(tx) }}
+                        </time>
+                        <app-status-badge [status]="tx.status" />
+                      </span>
+                    </span>
+
+                    <span
+                      class="shrink-0 text-sm font-bold tabular-nums"
+                      [class.text-success]="tx.direction === 'Received'"
+                      [class.text-ink]="tx.direction !== 'Received'"
+                    >
+                      {{ tx.direction === 'Received' ? '+' : '−' }}{{ tx.amount | money }}
+                    </span>
+                  </button>
+                </li>
+              }
+            </ul>
+          </div>
+        </section>
       }
     </div>
   }
 
   @if (selected(); as tx) {
-    <div class="fixed inset-0 z-40 flex items-end justify-center bg-ink/30 p-4 sm:items-center" (click)="closeDetail()">
-      <div class="surface stack w-full max-w-md p-5" (click)="$event.stopPropagation()">
-        <h2 class="text-lg font-bold text-ink">Transfer detail</h2>
-        <div class="list-row"><span class="hint">Reference</span><span class="font-mono text-sm">{{ tx.referenceNumber }}</span></div>
-        <div class="list-row"><span class="hint">Amount</span><span>{{ tx.amount | money }}</span></div>
-        <div class="list-row"><span class="hint">Fee</span><span>{{ tx.fee | money }}</span></div>
-        <div class="list-row"><span class="hint">Direction</span><span>{{ tx.direction }}</span></div>
-        <div class="list-row"><span class="hint">Status</span><span>{{ tx.status }}</span></div>
-        @if (tx.note) {
-          <div class="list-row"><span class="hint">Note</span><span>{{ tx.note }}</span></div>
-        }
+    <div
+      class="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-4 backdrop-blur-[2px] sm:items-center"
+      (click)="closeDetail()"
+      role="presentation"
+    >
+      <div
+        class="surface stack w-full max-w-md p-5 shadow-lg sm:p-6"
+        (click)="$event.stopPropagation()"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tx-detail-title"
+      >
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <p class="text-sm text-ink-muted">Transfer detail</p>
+            <h2 id="tx-detail-title" class="text-lg font-bold text-ink">{{ txLabel(tx) }}</h2>
+          </div>
+          <button type="button" class="btn-icon" (click)="closeDetail()" aria-label="Close">
+            <app-icon name="x" [size]="18" />
+          </button>
+        </div>
+
+        <p
+          class="text-3xl font-bold tabular-nums"
+          [class.text-success]="tx.direction === 'Received'"
+          [class.text-ink]="tx.direction !== 'Received'"
+        >
+          {{ tx.direction === 'Received' ? '+' : '−' }}{{ tx.amount | money }}
+        </p>
+
+        <div class="divide-y divide-slate-100 rounded-xl bg-slate-50 px-4">
+          <div class="flex items-center justify-between gap-3 py-3.5">
+            <span class="text-sm text-ink-muted">Status</span>
+            <app-status-badge [status]="tx.status" />
+          </div>
+          <div class="flex items-center justify-between gap-3 py-3.5">
+            <span class="text-sm text-ink-muted">Reference</span>
+            <span class="font-mono text-sm font-medium">{{ tx.referenceNumber }}</span>
+          </div>
+          <div class="flex items-center justify-between gap-3 py-3.5">
+            <span class="text-sm text-ink-muted">Fee</span>
+            <span class="font-semibold tabular-nums">{{ tx.fee | money }}</span>
+          </div>
+          <div class="flex items-center justify-between gap-3 py-3.5">
+            <span class="text-sm text-ink-muted">Direction</span>
+            <span class="font-medium">{{ tx.direction }}</span>
+          </div>
+          <div class="flex items-center justify-between gap-3 py-3.5">
+            <span class="text-sm text-ink-muted">When</span>
+            <span class="font-medium">{{ tx.createdAtUtc | date: 'medium' }}</span>
+          </div>
+          @if (tx.note) {
+            <div class="flex items-center justify-between gap-3 py-3.5">
+              <span class="text-sm text-ink-muted">Note</span>
+              <span class="max-w-[60%] text-right font-medium">{{ tx.note }}</span>
+            </div>
+          }
+        </div>
+
         <button type="button" class="btn-secondary btn-block" (click)="closeDetail()">Close</button>
       </div>
     </div>

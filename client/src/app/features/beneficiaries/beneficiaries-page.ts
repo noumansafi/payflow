@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { BeneficiariesApiService } from '../../core/api/beneficiaries-api.service';
 import { problemMessage } from '../../core/http/problem-details';
 import { Beneficiary, BeneficiaryCandidate } from '../../core/models/transfer.models';
@@ -7,7 +8,7 @@ import { ToastService } from '../../core/ui/toast.service';
 
 @Component({
   selector: 'app-beneficiaries-page',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './beneficiaries-page.html',
 })
 export class BeneficiariesPage implements OnInit {
