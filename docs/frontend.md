@@ -42,9 +42,16 @@ Cool slate surfaces, indigo brand actions, emerald inbound money — trust-forwa
 2. **Privacy control** — Hide-balance toggle on the home hero.
 3. **One job per screen** — Transfer is a short guided flow (recipient → keypad amount → confirm).
 4. **Confirm before commit** — Beneficiary lookup shows name before save/send.
-5. **Fee transparency** — Amount step shows `Fee · Instant transfer`.
+5. **Honest fee copy** — Transfers show “No fee” (no implied fee engine); success shows `result.fee` when non-zero.
 6. **Human errors** — ProblemDetails mapped to plain language toasts/field errors.
 7. **Mobile-friendly shell** — Bottom nav for primary destinations; works in a phone viewport.
+
+### Known polish gaps
+
+| Gap | Why | Follow-up |
+|---|---|---|
+| Activity rows lack counterparty names | API returns `counterpartyWalletId` only | Enrich DTO with display name, or map wallet→user once available |
+| No request-money flow | Not in API scope | Keep Home CTA as **People**, not Request |
 
 ## Shared UI primitives
 

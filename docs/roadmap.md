@@ -55,9 +55,9 @@ Ship vertical value in milestones. Each milestone should leave the solution **bu
 
 ### Milestone 9 — Angular frontend (in progress)
 - Auth flows, home, wallet, transfer, history, beneficiaries, notifications, profile
-- Tailwind CSS (SadaPay-inspired mint/peach, light theme), signals, guards, interceptors
+- Tailwind CSS light theme: indigo brand, slate surfaces, emerald inbound (Wise/Revolut-inspired); signals, guards, interceptors
 - UX tuned for non-technical demos (balance-first, confirm-before-send)
-- Remaining: UI/UX refinement and polish before marking complete
+- Remaining: counterparty display names on activity; mark complete after final polish pass
 
 ### Milestone 10 — Testing
 - Unit coverage for business rules

@@ -59,7 +59,7 @@ PayFlow lets registered users:
 | Data | EF Core (Code First), SQL Server, Migrations |
 | Auth | JWT, Refresh Tokens, Role-based authorization |
 | Logging | Serilog (structured) over `ILogger<T>` |
-| Frontend | Angular 20, Tailwind CSS, Signals, standalone components |
+| Frontend | Angular 20, Tailwind CSS (indigo/slate light theme), Signals, standalone components |
 | Quality | xUnit, FluentAssertions, unit + integration tests |
 | Platform | Docker, Docker Compose, GitHub Actions |
 
@@ -305,7 +305,7 @@ npm start
 
 - UI: `http://localhost:4200`
 - Proxied API: `/api/v1/*` → `http://localhost:5079` (`dotnet run`; use `8080` in `proxy.conf.json` for Docker)
-- Design decisions: [docs/frontend.md](docs/frontend.md)
+- Design decisions: [docs/frontend.md](docs/frontend.md) (Wise/Revolut-inspired indigo brand; not mint/SadaPay)
 
 ### Option B — Local API + Docker SQL only
 
