@@ -1,42 +1,36 @@
 <div class="flex min-h-dvh flex-col bg-surface">
-  <header class="sticky top-0 z-10 border-b border-line/80 bg-surface-elevated/90 backdrop-blur">
-    <div class="page flex items-center justify-between py-3 sm:max-w-xl">
-      <a routerLink="/" class="brand-mark">
-        Pay<span>Flow</span>
-      </a>
-      <a routerLink="/notifications" class="btn-ghost !px-2 !py-2 text-sm" aria-label="Notifications">
-        Alerts
-      </a>
-    </div>
-  </header>
-
   <main class="flex-1 pb-24">
     <router-outlet />
   </main>
 
   <nav
-    class="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-surface-elevated/95 backdrop-blur"
+    class="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200/80 bg-white/90 backdrop-blur-xl"
     aria-label="Primary"
   >
     <div class="mx-auto grid max-w-lg grid-cols-5 px-1 py-1.5 sm:max-w-xl">
-      <a routerLink="/" routerLinkActive="nav-link-active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">
-        <span aria-hidden="true">⌂</span>
+      <a
+        routerLink="/"
+        routerLinkActive="nav-link-active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="nav-link"
+      >
+        <app-icon name="home" [size]="22" />
         Home
       </a>
       <a routerLink="/transfer" routerLinkActive="nav-link-active" class="nav-link">
-        <span aria-hidden="true">↗</span>
+        <app-icon name="send" [size]="22" />
         Send
       </a>
       <a routerLink="/transactions" routerLinkActive="nav-link-active" class="nav-link">
-        <span aria-hidden="true">☰</span>
+        <app-icon name="activity" [size]="22" />
         Activity
       </a>
       <a routerLink="/beneficiaries" routerLinkActive="nav-link-active" class="nav-link">
-        <span aria-hidden="true">◎</span>
+        <app-icon name="people" [size]="22" />
         People
       </a>
       <a routerLink="/profile" routerLinkActive="nav-link-active" class="nav-link">
-        <span aria-hidden="true">☺</span>
+        <app-icon name="user" [size]="22" />
         Me
       </a>
     </div>
