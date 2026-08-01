@@ -7,9 +7,17 @@ import { RouterOutlet } from '@angular/router';
   template: `
     <div class="auth-shell">
       <div class="auth-panel">
-        <div class="stack-sm text-center">
-          <p class="brand-mark text-2xl">Pay<span>Flow</span></p>
-          <p class="page-subtitle">Send money instantly. Keep every transfer clear.</p>
+        <div class="mb-1 flex flex-col items-center gap-3 text-center">
+          <span
+            class="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-lg font-bold text-white shadow-sm shadow-primary/25"
+            aria-hidden="true"
+          >
+            P
+          </span>
+          <div class="stack-sm">
+            <p class="brand-mark text-2xl">Pay<span>Flow</span></p>
+            <p class="page-subtitle">Send money clearly. Keep every transfer accountable.</p>
+          </div>
         </div>
         <router-outlet />
       </div>

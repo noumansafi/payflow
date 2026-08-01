@@ -1,7 +1,7 @@
-<form class="surface stack p-5" [formGroup]="form" (ngSubmit)="submit()">
+<form class="auth-card stack" [formGroup]="form" (ngSubmit)="submit()">
   <div class="stack-sm">
     <h1 class="page-title !text-xl">Sign in</h1>
-    <p class="page-subtitle">Use your PayFlow email and password.</p>
+    <p class="page-subtitle">Welcome back — use your PayFlow email and password.</p>
   </div>
 
   <label class="field">
@@ -19,7 +19,7 @@
   </button>
 
   <div class="flex items-center justify-between text-sm">
-    <a routerLink="/forgot-password" class="font-medium">Forgot password?</a>
-    <a routerLink="/register" class="font-medium">Create account</a>
+    <a routerLink="/forgot-password" class="font-semibold">Forgot password?</a>
+    <a routerLink="/register" class="font-semibold">Create account</a>
   </div>
 </form>
