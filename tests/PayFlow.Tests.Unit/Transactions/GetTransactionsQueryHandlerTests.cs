@@ -41,6 +41,10 @@ public sealed class GetTransactionsQueryHandlerTests
         _wallets.GetByUserIdAsync(userId, Arg.Any<CancellationToken>()).Returns(wallet);
         _transactions.ListForWalletAsync(Arg.Any<TransactionListQuery>(), Arg.Any<CancellationToken>())
             .Returns(new TransactionListResult([tx], 1));
+        _wallets.GetOwnerDisplayNamesByWalletIdsAsync(
+                Arg.Is<IReadOnlyCollection<Guid>>(ids => ids.Contains(otherWalletId)),
+                Arg.Any<CancellationToken>())
+            .Returns(new Dictionary<Guid, string> { [otherWalletId] = "Sara Khan" });
 
         var result = await CreateSut().Handle(new GetTransactionsQuery(Page: 1, PageSize: 20), CancellationToken.None);
 
@@ -51,6 +55,7 @@ public sealed class GetTransactionsQueryHandlerTests
         result.Items.Should().HaveCount(1);
         result.Items[0].Direction.Should().Be(nameof(TransactionDirection.Sent));
         result.Items[0].CounterpartyWalletId.Should().Be(otherWalletId);
+        result.Items[0].CounterpartyName.Should().Be("Sara Khan");
 
         await _transactions.Received(1).ListForWalletAsync(
             Arg.Is<TransactionListQuery>(q =>

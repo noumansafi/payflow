@@ -28,12 +28,17 @@ public sealed class GetTransactionByIdQueryHandlerTests
         _currentUser.UserId.Returns(userId);
         _wallets.GetByUserIdAsync(userId, Arg.Any<CancellationToken>()).Returns(wallet);
         _transactions.GetByIdAsync(tx.Id, Arg.Any<CancellationToken>()).Returns(tx);
+        _wallets.GetOwnerDisplayNamesByWalletIdsAsync(
+                Arg.Is<IReadOnlyCollection<Guid>>(ids => ids.Contains(otherWalletId)),
+                Arg.Any<CancellationToken>())
+            .Returns(new Dictionary<Guid, string> { [otherWalletId] = "Sara Khan" });
 
         var result = await CreateSut().Handle(new GetTransactionByIdQuery(tx.Id), CancellationToken.None);
 
         result.Id.Should().Be(tx.Id);
         result.Direction.Should().Be(nameof(TransactionDirection.Sent));
         result.CounterpartyWalletId.Should().Be(otherWalletId);
+        result.CounterpartyName.Should().Be("Sara Khan");
         result.ReferenceNumber.Should().Be(tx.ReferenceNumber);
     }
 

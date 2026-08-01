@@ -40,6 +40,10 @@ public sealed class GetTransactionByReferenceQueryHandlerTests
         _currentUser.UserId.Returns(userId);
         _wallets.GetByUserIdAsync(userId, Arg.Any<CancellationToken>()).Returns(wallet);
         _transactions.GetByReferenceNumberAsync("PF-REF-99", Arg.Any<CancellationToken>()).Returns(tx);
+        _wallets.GetOwnerDisplayNamesByWalletIdsAsync(
+                Arg.Is<IReadOnlyCollection<Guid>>(ids => ids.Contains(senderWalletId)),
+                Arg.Any<CancellationToken>())
+            .Returns(new Dictionary<Guid, string> { [senderWalletId] = "Ali Raza" });
 
         var result = await CreateSut().Handle(
             new GetTransactionByReferenceQuery("PF-REF-99"),
@@ -47,6 +51,7 @@ public sealed class GetTransactionByReferenceQueryHandlerTests
 
         result.Direction.Should().Be(nameof(TransactionDirection.Received));
         result.CounterpartyWalletId.Should().Be(senderWalletId);
+        result.CounterpartyName.Should().Be("Ali Raza");
     }
 
     [Fact]

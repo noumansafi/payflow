@@ -50,8 +50,19 @@ public sealed class GetTransactionsQueryHandler(
                 request.PageSize),
             cancellationToken);
 
+        var names = await TransactionMapping.ResolveCounterpartyNamesAsync(
+            wallets,
+            result.Items,
+            wallet.Id,
+            cancellationToken);
+
         var items = result.Items
-            .Select(tx => TransactionMapping.ToDto(tx, wallet.Id))
+            .Select(tx =>
+            {
+                var counterpartyWalletId = TransactionMapping.CounterpartyWalletId(tx, wallet.Id);
+                names.TryGetValue(counterpartyWalletId, out var name);
+                return TransactionMapping.ToDto(tx, wallet.Id, name);
+            })
             .ToList();
 
         return new PagedResult<TransactionDto>(items, request.Page, request.PageSize, result.TotalCount);

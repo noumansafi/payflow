@@ -32,6 +32,15 @@ public sealed class GetTransactionByIdQueryHandler(
             throw new NotFoundException("Transaction was not found.");
         }
 
-        return TransactionMapping.ToDto(transaction, wallet.Id);
+        var names = await TransactionMapping.ResolveCounterpartyNamesAsync(
+            wallets,
+            [transaction],
+            wallet.Id,
+            cancellationToken);
+
+        var counterpartyWalletId = TransactionMapping.CounterpartyWalletId(transaction, wallet.Id);
+        names.TryGetValue(counterpartyWalletId, out var name);
+
+        return TransactionMapping.ToDto(transaction, wallet.Id, name);
     }
 }

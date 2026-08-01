@@ -15,6 +15,7 @@ Provide a durable history of money movement for users and for system diagnostics
 | ReferenceNumber | Public key — receipts, support, human-facing lookup |
 | SenderWalletId | Source wallet |
 | ReceiverWalletId | Destination wallet |
+| CounterpartyName | Read-model: other party's `FirstName LastName` (list/detail DTOs) |
 | Amount | Transfer amount |
 | Fee | Reserved for fee engine |
 | Status | Pending / Completed / Failed / Cancelled |

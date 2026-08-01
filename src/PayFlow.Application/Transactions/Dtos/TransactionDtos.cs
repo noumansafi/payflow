@@ -5,6 +5,7 @@ public sealed record TransactionDto(
     string ReferenceNumber,
     string Direction,
     Guid CounterpartyWalletId,
+    string? CounterpartyName,
     decimal Amount,
     decimal Fee,
     string Status,
