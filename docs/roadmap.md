@@ -53,11 +53,11 @@ Ship vertical value in milestones. Each milestone should leave the solution **bu
 - Admin query API for security review demos
 - Client IP capture on audit writes
 
-### Milestone 9 — Angular frontend (in progress)
+### Milestone 9 — Angular frontend ✅
 - Auth flows, home, wallet, transfer, history, beneficiaries, notifications, profile
 - Tailwind CSS light theme: indigo brand, slate surfaces, emerald inbound (Wise/Revolut-inspired); signals, guards, interceptors
 - UX tuned for non-technical demos (balance-first, confirm-before-send)
-- Remaining: counterparty display names on activity; mark complete after final polish pass
+- Activity rows show counterparty display names from enriched transaction DTOs
 
 ### Milestone 10 — Testing
 - Unit coverage for business rules

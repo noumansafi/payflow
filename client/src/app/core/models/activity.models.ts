@@ -3,6 +3,7 @@ export interface TransactionItem {
   referenceNumber: string;
   direction: string;
   counterpartyWalletId: string;
+  counterpartyName: string | null;
   amount: number;
   fee: number;
   status: string;

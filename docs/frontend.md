@@ -1,7 +1,7 @@
 # Frontend (Angular)
 
 **Milestone:** 9  
-**Status:** In progress — core screens wired; design system polished for light-mode P2P wallet UX
+**Status:** Done
 
 ## Why a dedicated frontend milestone
 
@@ -46,12 +46,12 @@ Cool slate surfaces, indigo brand actions, emerald inbound money — trust-forwa
 6. **Human errors** — ProblemDetails mapped to plain language toasts/field errors.
 7. **Mobile-friendly shell** — Bottom nav for primary destinations; works in a phone viewport.
 
-### Known polish gaps
+### Known follow-ups (post-M9)
 
 | Gap | Why | Follow-up |
 |---|---|---|
-| Activity rows lack counterparty names | API returns `counterpartyWalletId` only | Enrich DTO with display name, or map wallet→user once available |
 | No request-money flow | Not in API scope | Keep Home CTA as **People**, not Request |
+| Beneficiary nicknames on activity | DTO uses legal name from user profile | Optional overlay from saved People list |
 
 ## Shared UI primitives
 
@@ -110,7 +110,7 @@ Open `http://localhost:4200`. API calls go to `/api/v1/*` via `proxy.conf.json` 
 | 5 | Transfer flow (lookup → amount → confirm) | Done |
 | 6 | Transactions + beneficiaries | Done |
 | 7 | Notifications + profile + admin audit | Done |
-| 8 | UI/UX refinement + polish closeout | In progress |
+| 8 | UI/UX refinement + counterparty names closeout | Done |
 
 ### Auth session notes
 

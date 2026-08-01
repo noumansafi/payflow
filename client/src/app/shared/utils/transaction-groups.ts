@@ -50,11 +50,14 @@ export function groupTransactionsByDate(items: TransactionItem[]): TransactionGr
 
 /**
  * Activity row title.
- * API currently returns counterpartyWalletId only (no display name), so we keep
- * direction-first copy. Prefer a short note when present; counterparty names are
- * a follow-up once the API exposes them (or wallet→beneficiary mapping).
+ * Prefer counterparty display name from API, then note, then direction fallback.
  */
 export function counterpartyLabel(tx: TransactionItem): string {
+  const name = tx.counterpartyName?.trim();
+  if (name) {
+    return tx.direction === 'Received' ? `From ${name}` : `To ${name}`;
+  }
+
   const note = tx.note?.trim();
   if (note) {
     return note.length > 40 ? `${note.slice(0, 37)}…` : note;
