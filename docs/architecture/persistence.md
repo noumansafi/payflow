@@ -18,6 +18,65 @@
 | Fluent configurations | `PayFlow.Infrastructure/Persistence/Configurations` |
 | Migrations | `PayFlow.Infrastructure/Persistence/Migrations` |
 
+## Entity-relationship model
+
+```mermaid
+erDiagram
+    User ||--|| Wallet : owns
+    User ||--o{ Beneficiary : saves
+    User ||--o{ Notification : receives
+    User ||--o{ RefreshToken : has
+    Wallet ||--o{ Transaction : sends
+    Wallet ||--o{ Transaction : receives
+    User ||--o{ AuditLog : acts
+
+    User {
+        guid Id PK
+        string Email UK
+        string PasswordHash
+        string Role
+    }
+    Wallet {
+        guid Id PK
+        guid UserId FK
+        decimal Balance
+        string Currency
+        string Status
+        rowversion RowVersion
+    }
+    Transaction {
+        guid Id PK
+        string ReferenceNumber UK
+        guid SenderWalletId FK
+        guid ReceiverWalletId FK
+        decimal Amount
+        decimal Fee
+        string Status
+    }
+    Beneficiary {
+        guid Id PK
+        guid OwnerUserId FK
+        guid BeneficiaryUserId FK
+    }
+    Notification {
+        guid Id PK
+        guid UserId FK
+        string Type
+        bool IsRead
+    }
+    RefreshToken {
+        guid Id PK
+        guid UserId FK
+        string TokenHash
+    }
+    AuditLog {
+        guid Id PK
+        guid ActorUserId FK
+        string Action
+        string EntityType
+    }
+```
+
 ## Key mapping choices
 
 | Choice | Why |

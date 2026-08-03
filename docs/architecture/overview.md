@@ -12,7 +12,49 @@ PayFlow follows **Clean Architecture** with **CQRS** for application use cases.
 | `PayFlow.Api` | HTTP, auth middleware, DI composition, ProblemDetails | Application, Infrastructure, Shared |
 | `PayFlow.Shared` | Cross-cutting primitives only | — |
 
-## Request flow (target)
+```mermaid
+flowchart TB
+  Api[PayFlow.Api]
+  App[PayFlow.Application]
+  Infra[PayFlow.Infrastructure]
+  Domain[PayFlow.Domain]
+  Shared[PayFlow.Shared]
+
+  Api --> App
+  Api --> Infra
+  Infra --> App
+  App --> Domain
+  Api --> Shared
+  App --> Shared
+  Infra --> Shared
+  Infra --> Domain
+```
+
+Dependency rule: **Domain has zero project references.** Application never references EF Core.
+
+## Request flow
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant Middleware
+  participant Controller
+  participant MediatR
+  participant Handler
+  participant Infra as Infrastructure
+
+  Client->>Middleware: HTTP request
+  Middleware->>Middleware: ExceptionHandling + Serilog + Auth
+  Middleware->>Controller: Authorized request
+  Controller->>MediatR: Command or Query
+  MediatR->>MediatR: Logging + FluentValidation
+  MediatR->>Handler: Handle
+  Handler->>Infra: Ports (EF, tokens, email mock)
+  Infra-->>Handler: Result
+  Handler-->>Client: ProblemDetails or typed response
+```
+
+### Pipeline (detail)
 
 ```text
 HTTP Request
@@ -29,6 +71,22 @@ HTTP Request
         → Ports (interfaces)
           → Infrastructure adapters (EF, etc.)
   → ProblemDetails or typed response
+```
+
+## Transfer write path (happy path)
+
+```mermaid
+sequenceDiagram
+  participant Api as TransfersController
+  participant Cmd as TransferMoneyHandler
+  participant Rules as TransferRules
+  participant Db as EF UnitOfWork
+
+  Api->>Cmd: TransferMoneyCommand
+  Cmd->>Rules: Validate wallets, amount, balance
+  Cmd->>Db: Debit sender / credit receiver
+  Cmd->>Db: Insert Transaction + Notifications + AuditLog
+  Db-->>Api: TransferResultDto (Completed)
 ```
 
 ## Why CQRS here
