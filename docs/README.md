@@ -7,12 +7,13 @@ Portfolio documentation for architecture, features, and delivery roadmap.
 1. [../README.md](../README.md) — product overview for recruiters
 2. [architecture/overview.md](architecture/overview.md) — layering & request flow
 3. [architecture/tradeoffs.md](architecture/tradeoffs.md) — decisions & alternatives
-4. [architecture/persistence.md](architecture/persistence.md) — EF Core / SQL design
+4. [architecture/persistence.md](architecture/persistence.md) — EF Core / SQL design + ER
 5. [architecture/logging.md](architecture/logging.md) — Serilog structured ops logging
-6. [roadmap.md](roadmap.md) — milestone plan
-7. [frontend.md](frontend.md) — Angular UI decisions (M9)
-8. [testing.md](testing.md) — unit + integration strategy (M10)
-9. [cicd.md](cicd.md) — GitHub Actions pipeline (M11)
+6. [api.md](api.md) — complete `/api/v1` route catalog
+7. [roadmap.md](roadmap.md) — milestone plan
+8. [frontend.md](frontend.md) — Angular UI decisions (M9)
+9. [testing.md](testing.md) — unit + integration strategy (M10)
+10. [cicd.md](cicd.md) — GitHub Actions pipeline (M11)
 
 ## Features
 

@@ -2,8 +2,24 @@
 
 **Enterprise-style Digital Wallet & P2P Payments platform** — a portfolio project that demonstrates senior backend engineering: Clean Architecture, CQRS, secure auth, atomic money movement, testing, Docker, and CI/CD.
 
-> **Status:** Actively built milestone-by-milestone. See [Implementation status](#implementation-status) for what is done vs planned.  
+> **Status:** MVP complete (M1–M12). See [Implementation status](#implementation-status).  
 > **Intent:** Not a production fintech deployment — designed *as if* it could evolve into one.
+
+---
+
+## Product tour
+
+Mobile UI (demo data: **Ava Chen**, balance **$2,271.00**, peers Marcus / Sofia / James / Priya).
+
+| Home | Send confirm | Activity |
+|:---:|:---:|:---:|
+| ![Home balance](docs/images/home-balance.png) | ![Transfer confirm](docs/images/transfer-confirm.png) | ![Activity](docs/images/activity.png) |
+
+| People | Alerts |
+|:---:|:---:|
+| ![People](docs/images/people.png) | ![Notifications](docs/images/notifications.png) |
+
+UI decisions: [docs/frontend.md](docs/frontend.md).
 
 ---
 
@@ -133,7 +149,7 @@ These are deliberate choices — not defaults.
 | **M9** | Angular frontend | ✅ Done |
 | **M10** | Testing depth | ✅ Done |
 | **M11** | GitHub Actions | ✅ Done |
-| **M12** | Final documentation polish | ⬜ Planned |
+| **M12** | Final documentation polish | ✅ Done |
 
 Legend: ✅ Done · 🟡 In progress · ⬜ Planned
 
@@ -156,6 +172,7 @@ Detailed specs (behavior, rules, API shape, tradeoffs):
 | Beneficiaries | [docs/features/beneficiaries.md](docs/features/beneficiaries.md) |
 | Notifications | [docs/features/notifications.md](docs/features/notifications.md) |
 | Audit logs | [docs/features/audit-logs.md](docs/features/audit-logs.md) |
+| API catalog | [docs/api.md](docs/api.md) |
 | Roadmap | [docs/roadmap.md](docs/roadmap.md) |
 | Testing | [docs/testing.md](docs/testing.md) |
 | CI/CD | [docs/cicd.md](docs/cicd.md) |
@@ -175,42 +192,8 @@ Wallet 1──* Transaction (as sender or receiver)
 
 Entities: `User`, `Wallet`, `Transaction`, `Beneficiary`, `Notification`, `RefreshToken`, `AuditLog`.
 
-```mermaid
-erDiagram
-    User ||--|| Wallet : owns
-    User ||--o{ Beneficiary : saves
-    User ||--o{ Notification : receives
-    User ||--o{ RefreshToken : has
-    Wallet ||--o{ Transaction : sends
-    Wallet ||--o{ Transaction : receives
-    User ||--o{ AuditLog : acts
-
-    User {
-        guid Id PK
-        string Email UK
-        string PasswordHash
-        string Role
-    }
-    Wallet {
-        guid Id PK
-        guid UserId FK
-        decimal Balance
-        string Currency
-        string Status
-        rowversion RowVersion
-    }
-    Transaction {
-        guid Id PK
-        string ReferenceNumber UK
-        guid SenderWalletId FK
-        guid ReceiverWalletId FK
-        decimal Amount
-        decimal Fee
-        string Status
-    }
-```
-
-Persistence details: [docs/architecture/persistence.md](docs/architecture/persistence.md).
+Full ER diagram and mapping choices: [docs/architecture/persistence.md](docs/architecture/persistence.md).  
+Layering and request flow: [docs/architecture/overview.md](docs/architecture/overview.md).
 
 ---
 
@@ -223,14 +206,19 @@ Persistence details: [docs/architecture/persistence.md](docs/architecture/persis
 - OpenAPI / Swagger documentation
 - Thin controllers; FluentValidation outside controllers
 
-Current endpoints:
+**Route catalog (complete):** [docs/api.md](docs/api.md)
 
 ```http
 GET  /api/v1/health
 POST /api/v1/auth/register
 POST /api/v1/auth/login
 POST /api/v1/auth/refresh
+POST /api/v1/auth/logout
 GET  /api/v1/auth/me
+POST /api/v1/auth/password/forgot
+POST /api/v1/auth/password/reset
+POST /api/v1/auth/password/change
+POST /api/v1/auth/email/verify
 GET  /api/v1/wallets/me
 GET  /api/v1/wallets/me/balance
 POST /api/v1/wallets/me/status
