@@ -1,11 +1,12 @@
 # Testing
 
-PayFlow uses two test projects:
+PayFlow uses a backend test pyramid plus Angular Vitest unit tests:
 
 | Project | Purpose |
 |---|---|
 | `tests/PayFlow.Tests.Unit` | Fast feedback: handlers, validators, domain rules (NSubstitute + FluentAssertions) |
 | `tests/PayFlow.Tests.Integration` | Real HTTP + SQL Server via Testcontainers |
+| `client/` (Vitest) | Auth, guards, interceptor, HTTP helpers, thin API facades |
 
 ## Unit tests
 
@@ -40,8 +41,18 @@ dotnet test tests/PayFlow.Tests.Integration
 
 First run may take a few minutes while the SQL Server image downloads.
 
+## Frontend unit tests
+
+Angular uses Vitest (jsdom) through `@angular/build:unit-test`. See [frontend.md](frontend.md#testing).
+
+```bash
+cd client
+npm run test:ci
+```
+
 ## Conventions
 
 - Arrange / Act / Assert with clear names (`WhenX_ReturnsY`).
 - Integration helpers live under `Infrastructure/` (`ApiClient`, `PayFlowApiFactory`).
 - Do not call production-only paths that require real email providers; auth uses the mock sender already wired in Infrastructure.
+- Frontend specs co-locate as `*.spec.ts` and prefer services/guards over page DOM suites.

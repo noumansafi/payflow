@@ -85,6 +85,26 @@ client/src/app/
   features/       auth, home, transfer, transactions, …
 ```
 
+## Testing
+
+Unit tests use **Vitest** via Angular’s `@angular/build:unit-test` builder (official CLI default). Specs are co-located as `*.spec.ts` and follow TestBed / `HttpTestingController` / `runInInjectionContext` patterns for standalone apps.
+
+| Layer | Coverage |
+|---|---|
+| Auth | `AuthService`, functional guards, Bearer + 401 refresh interceptor |
+| HTTP helpers | ProblemDetails mapping |
+| Shared | `money` pipe, transaction grouping / counterparty labels |
+| API facades | Transfers + wallet `HttpClient` contracts |
+| UI | Toast queue + auto-dismiss |
+
+```bash
+cd client
+npm test              # watch (local)
+npm run test:ci       # single run + coverage (CI)
+```
+
+Requires **Node 20.19+ or 22+**. Page components stay thin orchestration and are not exhaustively DOM-tested.
+
 ## Local run
 
 ```bash

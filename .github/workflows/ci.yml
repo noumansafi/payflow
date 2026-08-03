@@ -58,6 +58,10 @@ jobs:
         working-directory: client
         run: npm ci
 
+      - name: Angular unit tests
+        working-directory: client
+        run: npm run test:ci
+
       - name: Build Angular client
         working-directory: client
         run: npm run build -- --configuration=production

@@ -16,7 +16,8 @@ File: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml)
 2. **Unit tests** — `tests/PayFlow.Tests.Unit`
 3. **Integration tests** — `tests/PayFlow.Tests.Integration` (Testcontainers + Docker on the runner)
 4. **Publish API** — `dotnet publish` → artifact `payflow-api`
-5. **Build Angular** — Node 22, `npm ci` + production build → artifact `payflow-client`
+5. **Angular unit tests** — Node 22, `npm ci` + `npm run test:ci` (Vitest)
+6. **Build Angular** — production build → artifact `payflow-client`
 
 Concurrency cancels older runs on the same ref so a busy branch does not pile up jobs.
 
@@ -29,7 +30,7 @@ dotnet test tests/PayFlow.Tests.Unit -c Release --no-build
 dotnet test tests/PayFlow.Tests.Integration -c Release --no-build   # needs Docker
 dotnet publish src/PayFlow.Api/PayFlow.Api.csproj -c Release -o artifacts/api --no-restore
 
-cd client && npm ci && npm run build -- --configuration=production
+cd client && npm ci && npm run test:ci && npm run build -- --configuration=production
 ```
 
 See also [testing.md](testing.md).
