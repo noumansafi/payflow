@@ -12,9 +12,9 @@ concurrency:
 
 jobs:
   build-and-test:
-    name: Build & unit tests
+    name: Build & test
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
@@ -33,3 +33,6 @@ jobs:
 
       - name: Unit tests
         run: dotnet test tests/PayFlow.Tests.Unit -c Release --no-build --verbosity normal
+
+      - name: Integration tests
+        run: dotnet test tests/PayFlow.Tests.Integration -c Release --no-build --verbosity normal
