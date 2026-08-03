@@ -131,7 +131,7 @@ These are deliberate choices — not defaults.
 | **M7** | Notifications | ✅ Done |
 | **M8** | Audit logs | ✅ Done |
 | **M9** | Angular frontend | ✅ Done |
-| **M10** | Testing depth | ⬜ Planned |
+| **M10** | Testing depth | ✅ Done |
 | **M11** | GitHub Actions | ⬜ Planned |
 | **M12** | Final documentation polish | ⬜ Planned |
 
@@ -157,6 +157,7 @@ Detailed specs (behavior, rules, API shape, tradeoffs):
 | Notifications | [docs/features/notifications.md](docs/features/notifications.md) |
 | Audit logs | [docs/features/audit-logs.md](docs/features/audit-logs.md) |
 | Roadmap | [docs/roadmap.md](docs/roadmap.md) |
+| Testing | [docs/testing.md](docs/testing.md) |
 
 ---
 

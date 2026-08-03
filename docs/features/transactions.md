@@ -84,4 +84,4 @@ Response list envelope:
 - [x] Sender and receiver both see the transaction
 - [x] Pagination metadata returned
 - [x] Unauthorized users cannot read others' transactions
-- [ ] Integration tests for filter/sort/page — deferred to M10
+- [x] Happy-path history covered by transfer integration flow (M10); dedicated filter matrix can grow later

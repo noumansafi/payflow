@@ -83,7 +83,7 @@ Responses:
 | Fee column now, engine later | Avoids schema churn |
 | Notifications inside same TX | Consistent UX; outbox later for external channels |
 | Dev-only credit endpoint | Enables Swagger demos without SQL; unavailable outside Development |
-| Unit tests for rules; DB integration later (M10) | Fast feedback now; deeper atomicity proof when integration suite lands |
+| Unit tests for rules + DB integration (M10) | Fast feedback in unit suite; atomicity proved via Testcontainers |
 
 ## Fintech note
 
@@ -92,7 +92,7 @@ Card networks and banks use clearing, settlement, and often asynchronous states 
 ## Acceptance criteria
 
 - [x] All business rules covered by unit tests
-- [ ] Integration test proves atomicity (failure path leaves balances unchanged) — deferred to M10
+- [x] Integration test proves atomicity (failure path leaves balances unchanged)
 - [x] Reference numbers unique
 - [x] Audit + notification created on success
 - [x] Self-transfer rejected

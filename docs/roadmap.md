@@ -59,10 +59,10 @@ Ship vertical value in milestones. Each milestone should leave the solution **bu
 - UX tuned for non-technical demos (balance-first, confirm-before-send)
 - Activity rows show counterparty display names from enriched transaction DTOs
 
-### Milestone 10 — Testing
-- Unit coverage for business rules
-- Integration coverage for API + DB
-- FluentAssertions conventions
+### Milestone 10 — Testing ✅
+- Unit coverage for domain transfer/wallet rules and Application handlers
+- Integration suite: WebApplicationFactory + Testcontainers SQL Server
+- Happy path + hard rules (funds, freeze, admin 403); see [testing.md](testing.md)
 
 ### Milestone 11 — CI/CD
 - GitHub Actions: restore → build → test → publish
