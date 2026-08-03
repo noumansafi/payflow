@@ -68,10 +68,13 @@ Ship vertical value in milestones. Each milestone should leave the solution **bu
 - GitHub Actions on `main`: restore → build → unit + integration tests → publish artifacts
 - Angular production build in the same workflow; see [cicd.md](cicd.md)
 
-### Milestone 12 — Documentation polish
-- Screenshots
-- ER + architecture diagrams
-- API catalog completeness
+### Milestone 12 — Documentation polish ✅
+- Mobile UI screenshots with demo data (`docs/images/`) + README product tour
+- Architecture / request-flow / transfer sequence mermaid in [overview.md](architecture/overview.md)
+- ER diagram as source of truth in [persistence.md](architecture/persistence.md)
+- Complete route catalog in [api.md](api.md)
+
+**MVP complete.** Further work is post-MVP.
 
 ## Post-MVP (explicitly out of current scope)
 
