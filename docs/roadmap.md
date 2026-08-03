@@ -64,8 +64,9 @@ Ship vertical value in milestones. Each milestone should leave the solution **bu
 - Integration suite: WebApplicationFactory + Testcontainers SQL Server
 - Happy path + hard rules (funds, freeze, admin 403); see [testing.md](testing.md)
 
-### Milestone 11 — CI/CD
-- GitHub Actions: restore → build → test → publish
+### Milestone 11 — CI/CD ✅
+- GitHub Actions on `main`: restore → build → unit + integration tests → publish artifacts
+- Angular production build in the same workflow; see [cicd.md](cicd.md)
 
 ### Milestone 12 — Documentation polish
 - Screenshots

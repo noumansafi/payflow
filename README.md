@@ -132,7 +132,7 @@ These are deliberate choices — not defaults.
 | **M8** | Audit logs | ✅ Done |
 | **M9** | Angular frontend | ✅ Done |
 | **M10** | Testing depth | ✅ Done |
-| **M11** | GitHub Actions | ⬜ Planned |
+| **M11** | GitHub Actions | ✅ Done |
 | **M12** | Final documentation polish | ⬜ Planned |
 
 Legend: ✅ Done · 🟡 In progress · ⬜ Planned
@@ -158,6 +158,7 @@ Detailed specs (behavior, rules, API shape, tradeoffs):
 | Audit logs | [docs/features/audit-logs.md](docs/features/audit-logs.md) |
 | Roadmap | [docs/roadmap.md](docs/roadmap.md) |
 | Testing | [docs/testing.md](docs/testing.md) |
+| CI/CD | [docs/cicd.md](docs/cicd.md) |
 
 ---
 
